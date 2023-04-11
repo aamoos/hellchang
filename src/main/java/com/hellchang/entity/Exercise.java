@@ -1,9 +1,6 @@
 package com.hellchang.entity;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -40,5 +37,15 @@ public class Exercise {
     private String delYn;                   //삭제여부
 
     private String completeYn;              //완료여부
+
+    @Builder
+    public Exercise(String exerciseName, int setCount, int kilogram, int reps, String delYn, String completeYn){
+        this.exerciseName = exerciseName;
+        this.setCount = setCount;
+        this.kilogram = kilogram;
+        this.reps = reps;
+        this.delYn = "N";
+        this.completeYn = "N";
+    }
 
 }
