@@ -1,3 +1,6 @@
+server:
+  port: 8180
+
 spring: #띄어쓰기 없음
   datasource: #띄어쓰기 2칸
     url: jdbc:h2:tcp://localhost/~/hellchang #4칸
