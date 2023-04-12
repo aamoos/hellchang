@@ -2,6 +2,7 @@ package com.hellchang.repository;
 
 import com.hellchang.entity.Exercise;
 import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
 
 /**
  * packageName    : com.hellchang.repository
@@ -15,5 +16,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * 2023-04-11        김재성       최초 생성
  */
 public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
-    
+    List<Exercise> findByExerciseDateAndDelYnOrderByIdAsc(String exerciseDate, String delYn);
 }

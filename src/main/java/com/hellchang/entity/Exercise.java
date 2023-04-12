@@ -26,6 +26,8 @@ public class Exercise {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;                        //인덱스
 
+    private Long userId;                    //사용자 idx
+
     private String exerciseName;            //운동명
 
     private int setCount;                   //세트
@@ -38,14 +40,18 @@ public class Exercise {
 
     private String completeYn;              //완료여부
 
+    private String exerciseDate;            //운동날짜
+
     @Builder
-    public Exercise(String exerciseName, int setCount, int kilogram, int reps, String delYn, String completeYn){
+    public Exercise(Long userId,String exerciseName, int setCount, int kilogram, int reps, String exerciseDate){
+        this.userId = userId;
         this.exerciseName = exerciseName;
         this.setCount = setCount;
         this.kilogram = kilogram;
         this.reps = reps;
         this.delYn = "N";
         this.completeYn = "N";
+        this.exerciseDate = exerciseDate;
     }
 
 }
