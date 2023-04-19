@@ -1,7 +1,6 @@
 package com.hellchang.entity;
 
 import lombok.*;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 
@@ -52,6 +51,20 @@ public class Exercise {
         this.delYn = "N";
         this.completeYn = "N";
         this.exerciseDate = exerciseDate;
+    }
+
+    /**
+    * @methodName : updateCompleteYn
+    * @date : 2023-04-19 오후 4:40
+    * @author : 김재성
+    * @Description: 완료여부 업데이트
+    **/
+    public void updateCompleteYn(String completeYn){
+        this.completeYn = completeYn;
+    }
+
+    public void updateDelYn(String delYn){
+        this.delYn = delYn;
     }
 
 }
