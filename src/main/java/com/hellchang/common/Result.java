@@ -8,7 +8,7 @@ import lombok.Data;
  * fileName       : Result
  * author         : 김재성
  * date           : 2023-04-19
- * description    : rest api에서 리스트 return 할때 쓰는 공통 dto
+ * description    : rest api에서 리스트 형식의 dto를 return 할때 쓰는 class
  * ===========================================================
  * DATE              AUTHOR             NOTE
  * -----------------------------------------------------------

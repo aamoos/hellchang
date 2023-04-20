@@ -197,6 +197,12 @@ public class ExerciseController {
         }
     }
 
+    /**
+    * @methodName :
+    * @date : 2023-04-19 오후 5:31
+    * @author : 김재성
+    * @Description: 완료여부 request dto
+    **/
     @Data
     static class UpdateCompleteYnRequest{
 
@@ -207,6 +213,12 @@ public class ExerciseController {
         private String completeYn;
     }
 
+    /**
+    * @methodName :
+    * @date : 2023-04-19 오후 5:32
+    * @author : 김재성
+    * @Description: 삭제여부 request dto
+    **/
     @Data
     static class UpdateDeleteYnRequest{
 

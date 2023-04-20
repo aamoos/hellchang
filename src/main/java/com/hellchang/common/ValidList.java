@@ -13,7 +13,7 @@ import java.util.List;
  * fileName       : ValidList
  * author         : 김재성
  * date           : 2023-04-18
- * description    :
+ * description    : 리스트<dto> 형식의 request를 validation 검증할때 사용하는 class
  * ===========================================================
  * DATE              AUTHOR             NOTE
  * -----------------------------------------------------------
