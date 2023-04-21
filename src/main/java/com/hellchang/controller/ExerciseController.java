@@ -79,6 +79,26 @@ public class ExerciseController {
     }
 
     /**
+    * @methodName : copy
+    * @date : 2023-04-21 오전 11:08
+    * @author : 김재성
+    * @Description: 복사하기 api
+    **/
+    @PostMapping("/exercise/copy")
+    public ResponseEntity<?> copy(@Valid @RequestBody InsertCopyRequest request, BindingResult result){
+        log.info("bindingResult ={}", result);
+
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body(result.getAllErrors());
+        }
+
+        //복사하기
+        exerciseService.copy(request.getStartDate(), request.getEndDate(), request.getTargetDate());
+
+        return ResponseEntity.ok("200");
+    }
+
+    /**
     * @methodName : updateCompleteYn
     * @date : 2023-04-19 오후 4:58
     * @author : 김재성
@@ -193,6 +213,8 @@ public class ExerciseController {
                     .kilogram(kilogram)
                     .reps(reps)
                     .exerciseDate(exerciseDate)
+                    .delYn(delYn)
+                    .completeYn(completeYn)
                     .build();
         }
     }
@@ -225,8 +247,27 @@ public class ExerciseController {
         @NotNull(message = "운동날짜는 필수값입니다.")
         private String exerciseDate;        //운동날짜
 
-        @NotNull(message = "삭제여부는 필수 입력값 입니다.")
+        @NotNull(message = "삭제여부는 필수값입니다.")
         private String delYn;               //삭제여부
+    }
+
+    /**
+    * @methodName :
+    * @date : 2023-04-21 오전 11:08
+    * @author : 김재성
+    * @Description: 복사하기 request dto
+    **/
+    @Data
+    static class InsertCopyRequest{
+
+        @NotNull(message = "시작날짜는 필수값입니다.")
+        private int startDate;        //시작날짜
+
+        @NotNull(message = "종료날짜는 필수값입니다.")
+        private int endDate;          //종료날짜
+
+        @NotNull(message = "대상날짜는 필수값입니다.")
+        private int targetDate;       //대상날짜
     }
 
 }

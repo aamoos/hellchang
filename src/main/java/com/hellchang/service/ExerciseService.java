@@ -1,6 +1,5 @@
 package com.hellchang.service;
 
-import com.hellchang.controller.ExerciseController;
 import com.hellchang.entity.Exercise;
 import com.hellchang.repository.ExerciseRepository;
 import lombok.RequiredArgsConstructor;
@@ -51,10 +50,41 @@ public class ExerciseService {
         Optional<Exercise> optionalExercise = exerciseRepository.findById(id);
         if(optionalExercise.isPresent()){
             Exercise exercise = optionalExercise.get();
+
             //완료여부 업데이트
             exercise.updateCompleteYn(completeYn);
         }else{
             throw new EntityNotFoundException("해당 운동을 찾을수 없습니다.");
+        }
+    }
+
+    /**
+    * @methodName : copy
+    * @date : 2023-04-21 오후 2:22
+    * @author : 김재성
+    * @Description: 복사기능
+    **/
+    @Transactional
+    public void copy(int startDate, int endDate, int targetDate){
+
+        for(int i=startDate; i<=endDate; i++){
+            List<Exercise> list = exerciseRepository.findByExerciseDateAndDelYn(String.valueOf(targetDate), "N");
+            int index = 0;
+            for (Exercise exercise : list) {
+                Exercise item = exercise.builder()
+                        .userId(list.get(index).getUserId())
+                        .exerciseName(list.get(index).getExerciseName())
+                        .setCount(list.get(index).getSetCount())
+                        .kilogram(list.get(index).getKilogram())
+                        .reps(list.get(index).getReps())
+                        .delYn(list.get(index).getDelYn())
+                        .completeYn(list.get(index).getCompleteYn())
+                        .exerciseDate(String.valueOf(i))
+                        .build();
+                //insert
+                  exerciseRepository.save(item);
+                index++;
+            }
         }
     }
 
@@ -67,7 +97,7 @@ public class ExerciseService {
     @Transactional
     public void updateDelYn(String exerciseDate, String delYn){
 
-        List<Exercise> exercises = exerciseRepository.findByExerciseDate(exerciseDate);
+        List<Exercise> exercises = exerciseRepository.findByExerciseDateAndDelYn(exerciseDate, "N");
 
         for (Exercise exercise : exercises) {
             exercise.updateDelYn("Y");

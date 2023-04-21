@@ -29,7 +29,8 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
     * @methodName : findByExerciseDate
     * @date : 2023-04-19 오후 5:22
     * @author : 김재성
-    * @Description: 해당 날자에 등록된 운동조회
+    * @Description: 해당 날자에 등록된 운동 리스트 조회
     **/
-    List<Exercise> findByExerciseDate(String exerciseDate);
+    List<Exercise> findByExerciseDateAndDelYn(String exerciseDate, String delYn);
+
 }

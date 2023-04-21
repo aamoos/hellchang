@@ -42,14 +42,14 @@ public class Exercise {
     private String exerciseDate;            //운동날짜
 
     @Builder
-    public Exercise(Long userId,String exerciseName, int setCount, int kilogram, int reps, String exerciseDate){
+    public Exercise(Long userId,String exerciseName, int setCount, int kilogram, int reps, String delYn, String completeYn, String exerciseDate){
         this.userId = userId;
         this.exerciseName = exerciseName;
         this.setCount = setCount;
         this.kilogram = kilogram;
         this.reps = reps;
-        this.delYn = "N";
-        this.completeYn = "N";
+        this.delYn = delYn;
+        this.completeYn = completeYn;
         this.exerciseDate = exerciseDate;
     }
 
@@ -63,6 +63,12 @@ public class Exercise {
         this.completeYn = completeYn;
     }
 
+    /**
+    * @methodName : updateDelYn
+    * @date : 2023-04-21 오후 1:34
+    * @author : 김재성
+    * @Description: 삭제여부 업데이트
+    **/
     public void updateDelYn(String delYn){
         this.delYn = delYn;
     }
