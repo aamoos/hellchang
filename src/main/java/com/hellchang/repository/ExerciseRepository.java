@@ -3,6 +3,7 @@ package com.hellchang.repository;
 import com.hellchang.entity.Exercise;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * packageName    : com.hellchang.repository
@@ -33,4 +34,11 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
     **/
     List<Exercise> findByExerciseDateAndDelYn(String exerciseDate, String delYn);
 
+    /**
+    * @methodName : deleteByExerciseDate
+    * @date : 2023-04-24 오후 1:41
+    * @author : 김재성
+    * @Description: 해당 운동날짜에 등록된 데이터 전부 삭제
+    **/
+    void deleteByExerciseDate(String exerciseDate);
 }

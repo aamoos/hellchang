@@ -39,6 +39,11 @@ public class ExerciseService {
         return exerciseRepository.save(exercise);
     }
 
+    @Transactional
+    public void delete(String exerciseDate){
+        exerciseRepository.deleteByExerciseDate(exerciseDate);
+    }
+
     /**
     * @methodName : updateCompleteYn
     * @date : 2023-04-19 오후 5:14
@@ -82,10 +87,22 @@ public class ExerciseService {
                         .exerciseDate(String.valueOf(i))
                         .build();
                 //insert
-                  exerciseRepository.save(item);
+                exerciseRepository.save(item);
                 index++;
             }
         }
+    }
+
+    @Transactional
+    public void move(int moveDate, int targetDate){
+
+        List<Exercise> exercises = exerciseRepository.findByExerciseDateAndDelYn(String.valueOf(targetDate), "N");
+
+        for (Exercise exercise : exercises) {
+            exercise.updateExerciseDate(String.valueOf(moveDate));
+        }
+
+        exerciseRepository.saveAll(exercises);
     }
 
     /**

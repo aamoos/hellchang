@@ -14,6 +14,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -70,9 +72,17 @@ public class ExerciseController {
             return ResponseEntity.badRequest().body(result.getAllErrors());
         }
 
-        for (SaveRequestItem item : request.getList()) {
-            Exercise exercise = item.toEntity();
-            exerciseService.save(exercise);
+        //해당 날짜 데이터 삭제
+        if(request.getList().size() > 0){
+            exerciseService.delete(request.get(0).getExerciseDate());
+
+            //등록한 데이터들 저장
+            for (SaveRequestItem item : request.getList()) {
+                Exercise exercise = item.toEntity();
+                exerciseService.save(exercise);
+            }
+        }else{
+            throw new EntityNotFoundException("해당 운동을 찾을수 없습니다.");
         }
 
         return ResponseEntity.ok("200");
@@ -85,7 +95,7 @@ public class ExerciseController {
     * @Description: 복사하기 api
     **/
     @PostMapping("/exercise/copy")
-    public ResponseEntity<?> copy(@Valid @RequestBody InsertCopyRequest request, BindingResult result){
+    public ResponseEntity<?> copy(@Valid @RequestBody CopyRequest request, BindingResult result){
         log.info("bindingResult ={}", result);
 
         if (result.hasErrors()) {
@@ -94,6 +104,26 @@ public class ExerciseController {
 
         //복사하기
         exerciseService.copy(request.getStartDate(), request.getEndDate(), request.getTargetDate());
+
+        return ResponseEntity.ok("200");
+    }
+
+    /**
+    * @methodName : move
+    * @date : 2023-04-24 오전 10:21
+    * @author : 김재성
+    * @Description: 
+    **/
+    @PostMapping("/exercise/move")
+    public ResponseEntity<?> move(@Valid @RequestBody MoveRequest request, BindingResult result){
+        log.info("bindingResult ={}", result);
+
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body(result.getAllErrors());
+        }
+
+        //이동하기
+        exerciseService.move(request.getMoveDate(), request.getTargetDate());
 
         return ResponseEntity.ok("200");
     }
@@ -133,7 +163,7 @@ public class ExerciseController {
         }
 
         //삭제처리하기
-        exerciseService.updateDelYn(request.getExerciseDate(), request.delYn);
+        exerciseService.updateDelYn(request.getExerciseDate(), request.getDelYn());
 
         return ResponseEntity.ok("200");
     }
@@ -258,13 +288,23 @@ public class ExerciseController {
     * @Description: 복사하기 request dto
     **/
     @Data
-    static class InsertCopyRequest{
+    static class CopyRequest{
 
         @NotNull(message = "시작날짜는 필수값입니다.")
         private int startDate;        //시작날짜
 
         @NotNull(message = "종료날짜는 필수값입니다.")
         private int endDate;          //종료날짜
+
+        @NotNull(message = "대상날짜는 필수값입니다.")
+        private int targetDate;       //대상날짜
+    }
+
+    @Data
+    static class MoveRequest{
+
+        @NotNull(message = "이동할날짜는 필수값입니다.")
+        private int moveDate;        //시작날짜
 
         @NotNull(message = "대상날짜는 필수값입니다.")
         private int targetDate;       //대상날짜

@@ -73,4 +73,14 @@ public class Exercise {
         this.delYn = delYn;
     }
 
+    /**
+    * @methodName : updateExerciseDate
+    * @date : 2023-04-24 오전 11:02
+    * @author : 김재성
+    * @Description: 운동날짜 업데이트
+    **/
+    public void updateExerciseDate(String exerciseDate){
+        this.exerciseDate = exerciseDate;
+    }
+
 }
