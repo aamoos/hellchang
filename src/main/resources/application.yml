@@ -15,6 +15,7 @@ spring: #띄어쓰기 없음
       hibernate: #띄어쓰기 6칸
         # show_sql: true #띄어쓰기 8칸
         format_sql: true #띄어쓰기 8칸
+        show_sql: true #이향준 추가
 
   mvc:
     hidden-method:
@@ -32,3 +33,8 @@ spring: #띄어쓰기 없음
 logging:
   level: #띄어쓰기 없음
     org.hibernate.SQL: debug #띄어쓰기 2칸
+
+jwt: #이향준 추가
+  header: Authorization
+  secret: c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
+  token-validity-in-seconds: 86400
