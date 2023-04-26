@@ -3,23 +3,29 @@ package com.hellchang.controller;
 import com.hellchang.common.Result;
 import com.hellchang.common.ValidList;
 import com.hellchang.entity.Exercise;
+import com.hellchang.jwt.TokenProvider;
 import com.hellchang.repository.ExerciseRepository;
 import com.hellchang.service.ExerciseService;
+import io.jsonwebtoken.Header;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -41,6 +47,7 @@ public class ExerciseController {
 
     private final ExerciseService exerciseService;
     private final ExerciseRepository exerciseRepository;
+    private final TokenProvider tokenProvider;
 
     /**
     * @methodName : list
@@ -49,7 +56,11 @@ public class ExerciseController {
     * @Description: 오늘의 운동 리스트 조회
     **/
     @PostMapping("/exercise/list")
-    public Result list(@RequestBody FindRequestDto findRequestDto){
+    public Result list(@RequestBody FindRequestDto findRequestDto, @RequestHeader(name="Authorization") String token) throws Exception {
+
+        Map<String, Object> payloadMap = tokenProvider.getJwtTokenPayload(token);
+        String id = String.valueOf(payloadMap.get("sub"));
+
         //삭제 안된 운동조회
         List<Exercise> list = exerciseRepository.findByExerciseDateAndDelYnOrderByIdAsc(findRequestDto.getExerciseDate(), "N");
         List<ExerciseListDto> collect = list.stream()

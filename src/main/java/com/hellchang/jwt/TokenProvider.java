@@ -1,5 +1,7 @@
 package com.hellchang.jwt;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -15,9 +17,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -41,6 +41,8 @@ public class TokenProvider implements InitializingBean {
 
     private Key key;
 
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     public TokenProvider(    //application.yml에서 정의한 header와 validity 값 주입
             @Value("${jwt.secret}") String secret,
@@ -111,6 +113,22 @@ public class TokenProvider implements InitializingBean {
         //UserDetails 객체를 만들어서 Authentication 리턴
         User principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+    }
+
+    /**
+    * @methodName : getJwtTokenPayload
+    * @date : 2023-04-26 오후 5:06
+    * @author : 김재성
+    * @Description: token으로 정보 추출
+    **/
+    public Map<String, Object> getJwtTokenPayload(String token) throws Exception {
+        String[] check = token.split("\\.");
+        Base64.Decoder decoder = Base64.getDecoder();
+        String payload = new String(decoder.decode(check[1]));
+
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> returnMap = mapper.readValue(payload, Map.class);
+        return returnMap;
     }
 
     /**

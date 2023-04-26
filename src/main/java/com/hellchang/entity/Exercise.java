@@ -1,5 +1,7 @@
 package com.hellchang.entity;
 
+import com.hellchang.controller.ExerciseController;
+import com.hellchang.dto.UserDto;
 import lombok.*;
 
 import javax.persistence.*;
