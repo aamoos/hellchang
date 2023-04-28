@@ -42,9 +42,12 @@ public class UserService {
                 .build();
 
         User user = User.builder() //유저 정보 빌드
+                .nickname(userDto.getNickname())  //이름
                 .username(userDto.getUsername())
                 .password(passwordEncoder.encode(userDto.getPassword()))
-                .nickname(userDto.getNickname())
+                .address(userDto.getAddress())
+                .email(userDto.getEmail())
+                .phone(userDto.getPhone())
                 .authorities(Collections.singleton(authority))
                 .activated(true)
                 .build();

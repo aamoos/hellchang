@@ -23,14 +23,23 @@ public class User {
     private Long userId;
 
     @Column(name = "username", length = 50, unique = true)
-    private String username;
+    private String username; //아이디
 
     @JsonIgnore
     @Column(name = "password", length = 100)
     private String password;
 
     @Column(name = "nickname", length = 50)
-    private String nickname;
+    private String nickname; //이름
+
+    @Column(name = "address", length = 50)
+    private String address; //주소
+
+    @Column(name = "email", length = 50)
+    private String email; //이메일
+
+    @Column(name = "phone", length = 50)
+    private String phone; //핸드폰
 
     @JsonIgnore
     @Column(name = "activated")
