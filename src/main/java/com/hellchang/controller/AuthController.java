@@ -4,6 +4,7 @@ import com.hellchang.dto.LoginDto;
 import com.hellchang.dto.TokenDto;
 import com.hellchang.jwt.JwtFilter;
 import com.hellchang.jwt.TokenProvider;
+import com.hellchang.repository.UserRepository;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,9 +32,12 @@ public class AuthController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    public AuthController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
+    private final UserRepository userRepository;
+
+    public AuthController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, UserRepository userRepository) {
         this.tokenProvider = tokenProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -64,8 +68,10 @@ public class AuthController {
         //위에서 리턴받은 유저 정보와 권한 정보를 인증 정보를 현재 실행중인 스레드(Security Context)에 저장
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        Long userId = userRepository.findByUsername(authentication.getName()).getUserId();
+
         //유저정보를 통해 jwt토큰 생성
-        String jwt = tokenProvider.createToken(authentication);
+        String jwt = tokenProvider.createToken(authentication, userId);
 
         //헤더에 토큰정보를 포함
         HttpHeaders httpHeaders = new HttpHeaders();

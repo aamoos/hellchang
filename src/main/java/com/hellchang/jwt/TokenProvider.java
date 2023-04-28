@@ -2,6 +2,7 @@ package com.hellchang.jwt;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hellchang.repository.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -45,8 +46,8 @@ public class TokenProvider implements InitializingBean {
     private String secretKey;
 
     public TokenProvider(    //application.yml에서 정의한 header와 validity 값 주입
-            @Value("${jwt.secret}") String secret,
-            @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds) {
+                             @Value("${jwt.secret}") String secret,
+                             @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds, UserRepository userRepository) {
         this.secret = secret;
         this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000;
     }
@@ -65,8 +66,8 @@ public class TokenProvider implements InitializingBean {
     * @Description: 유저 정보를 가지고 AccessToken을 생성하는 메서드
     **/
     //Authentication 객체에 포함되어 있는 권한 정보들을 담은 토큰 생성
-    public String createToken(Authentication authentication) {
-        
+    public String createToken(Authentication authentication, Long userId) {
+
         //권한 가져오기
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -77,8 +78,13 @@ public class TokenProvider implements InitializingBean {
         //현재 시간과 yml 파일에서 설정한 토큰 만료시간을 붙임
         Date validity = new Date(now + this.tokenValidityInMilliseconds);
 
+        // 사용자 인덱스 정보 추가
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userId);
+
         //토큰 생성하여 리턴
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities) //JWT의 body이고 key-value 데이터를 추가함. 여기서는 권한정보
                 .setExpiration(validity)  //만료일 설정
@@ -95,7 +101,7 @@ public class TokenProvider implements InitializingBean {
     //토큰에 담겨있는 권한 정보들을 이용해 Authentication 객체를 리턴
     //JwtFilter에서 사용됨
     public Authentication getAuthentication(String token) {
-        
+
         //토큰 복호화
         Claims claims = Jwts
                 .parserBuilder()
@@ -132,12 +138,32 @@ public class TokenProvider implements InitializingBean {
     }
 
     /**
+    * @methodName : getJwtTokenUserId
+    * @date : 2023-04-28 오후 5:51
+    * @author : 김재성
+    * @Description: jwt token으로 현재 로그인한 사용자 인덱스 가져오기
+    **/
+    public Long getJwtTokenUserId(String token) throws JsonProcessingException {
+        String[] check = token.split("\\.");
+        Base64.Decoder decoder = Base64.getDecoder();
+        String payload = new String(decoder.decode(check[1]));
+
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> returnMap = mapper.readValue(payload, Map.class);
+
+        int userId = (int) returnMap.get("userId");
+
+        return Long.valueOf(userId);
+    }
+
+    /**
     * @methodName : validateToken
     * @date : 2023-04-20 오후 1:01
     * @author : hj
     * @Description: 토큰 정보 검증하는 메서드
     **/
-    public boolean validateToken(String token) {
+    public boolean validateToken(String token) throws Exception {
+        System.out.println(getJwtTokenPayload(token));
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
