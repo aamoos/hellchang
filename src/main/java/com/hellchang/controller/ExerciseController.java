@@ -57,10 +57,6 @@ public class ExerciseController {
     **/
     @PostMapping("/exercise/list")
     public Result list(@RequestBody FindRequestDto findRequestDto, @RequestHeader(name="Authorization") String token) throws Exception {
-
-        Map<String, Object> payloadMap = tokenProvider.getJwtTokenPayload(token);
-        String id = String.valueOf(payloadMap.get("sub"));
-
         //삭제 안된 운동조회
         List<Exercise> list = exerciseRepository.findByExerciseDateAndDelYnOrderByIdAsc(findRequestDto.getExerciseDate(), "N");
         List<ExerciseListDto> collect = list.stream()
@@ -76,7 +72,7 @@ public class ExerciseController {
     * @Description: 오늘의 운동 저장
     **/
     @PostMapping("/exercise/save")
-    public ResponseEntity<?> save(@Valid @RequestBody ValidList<SaveRequestItem> request, BindingResult result){
+    public ResponseEntity<?> save(@Valid @RequestBody ValidList<SaveRequestItem> request, BindingResult result) throws Exception {
         log.info("bindingResult ={}", result);
 
         if (result.hasErrors()) {
