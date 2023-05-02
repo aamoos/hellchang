@@ -36,6 +36,23 @@ spring: #띄어쓰기 없음
     restart:
       enable: false #운영에서는 제거
 
+  #메일 api 사용 설정
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username: gidwns617
+    password: 65BB4KPHR4QR
+    protocol: smtps
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            enable: true
+            trust: smtp.naver.com
+
 logging:
   level: #띄어쓰기 없음
     org.hibernate.SQL: debug #띄어쓰기 2칸

@@ -3,12 +3,15 @@ package com.hellchang.controller;
 import com.hellchang.dto.UserDto;
 import com.hellchang.entity.User;
 import com.hellchang.service.UserService;
+import lombok.Data;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 /**
 * @package : com.example.jwt.controller
@@ -18,7 +21,6 @@ import javax.validation.Valid;
 * @Description: User 관련 클래스
 **/
 @Controller
-@RequestMapping("/api")
 public class UserController {
     private final UserService userService;
 
@@ -33,7 +35,7 @@ public class UserController {
     * @author : hj
     * @Description: 회원가입 메서드
     **/
-    @PostMapping("/signup")
+    @PostMapping("/auth/signup")
     @ResponseBody
     public ResponseEntity<User> signup(
             @Valid @RequestBody UserDto userDto
@@ -41,6 +43,42 @@ public class UserController {
         return ResponseEntity.ok(userService.signup(userDto)); //http의 body, header, status를 포함한 데이터 -> 추가 서칭 필요
         //Response header에는 웹서버가 웹브라우저에 응답하는 메시지가 들어있음
         //Reponse body에는 데이터 값이 들어있음
+    }
+    
+    /**
+    * @methodName : idCheck
+    * @date : 2023-05-02 오후 3:23
+    * @author : hj
+    * @Description: username입력 후 로그인 시 로그인 or 회원가입
+    **/
+    @PostMapping("/auth/usernameCheck")
+    @ResponseBody
+    public ResponseEntity<Boolean> usernameCheck(@Valid @RequestBody UsernameCheckDto request){
+        return ResponseEntity.ok(userService.usernameCheck(request.getUsername()));
+    }
+
+    /**
+    * @methodName : sendEmail
+    * @date : 2023-05-02 오후 4:17
+    * @author : hj
+    * @Description: 이메일 전송 api, 로그인 시 해당 유저가 존재하지 않으면 해당 api 호출
+    **/
+    @PostMapping("/auth/sendEmail")
+    @ResponseBody
+    public void sendEmail(@Valid @RequestBody UsernameCheckDto request) throws MessagingException {
+        userService.sendEmail(request.getUsername());
+    }
+
+    /**
+    * @methodName : idCheck
+    * @date : 2023-05-02 오후 3:22
+    * @author : hj
+    * @Description:  아이디 중복 체크
+    **/
+    @PostMapping("/auth/idCheck")
+    @ResponseBody
+    public ResponseEntity<Boolean> idCheck(@Valid @RequestBody UsernameCheckDto request){
+        return ResponseEntity.ok(userService.idCheck(request.getUsername()));
     }
 
     /**
@@ -62,4 +100,19 @@ public class UserController {
     public ResponseEntity<User> getUserInfo(@PathVariable String username) {  //username 파라미터를 통해 해당 유저의 정보 및 권한 정보 리턴
         return ResponseEntity.ok(userService.getUserWithAuthorities(username).get());
     }
+    
+    /**
+    * @methodName : usernameCheckDto
+    * @date : 2023-05-02 오후 3:49
+    * @author : hj
+    * @Description:
+    **/
+    @Data
+    static class UsernameCheckDto{
+
+        @NotNull
+        private String username;
+    }
 }
+
+

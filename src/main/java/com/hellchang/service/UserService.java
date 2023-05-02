@@ -6,10 +6,14 @@ import com.hellchang.entity.Authority;
 import com.hellchang.entity.User;
 import com.hellchang.repository.UserRepository;
 import com.hellchang.utils.SecurityUtil;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -18,9 +22,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    private final JavaMailSender mailSender;
+    private static final String FROM_ADDRESS = "gidwns617@naver.com";
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JavaMailSender mailSender) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.mailSender = mailSender;
     }
 
     /**
@@ -53,6 +61,61 @@ public class UserService {
                 .build();
 
         return userRepository.save(user);  // save = DB에 insert
+    }
+
+    /**
+    * @methodName : usernameCheck
+    * @date : 2023-05-02 오후 3:24
+    * @author : hj
+    * @Description: 로그인 시 username 체크 후 회원 존재 시 메인 이동, 없으면 회원가입 이동
+    **/
+    @Transactional
+    public boolean usernameCheck(String username){
+        if (userRepository.findByUsername(username) != null){
+            System.out.println("true ------------------------------------------");
+            return true;
+        } else {
+            System.out.println("false -----------------------------------------");
+            return false;
+        }
+    }
+
+    /**
+    * @methodName : sendEmail
+    * @date : 2023-05-02 오후 4:46
+    * @author : hj
+    * @Description: 가입 요청 이메일 전송
+    **/
+    @Transactional
+    public void sendEmail(String username) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setTo(username);
+        helper.setFrom(FROM_ADDRESS);
+        helper.setSubject("회원가입을 위해 이메일 인증을 진행해주세요.");
+        helper.setText("http://localhost:8080/userJoin 으로 접속하여 회원가입을 진행해주세요.", true);
+//        String htmlContent = "<p>" + mailDto.getMessage() +"<p> <img src='cid:sample-img'>";
+        String htmlContent = "<div>"
+                + "<a href='http://localhost:8080/userJoin' target='_blank' style='font-weight: bold; font-size:20px;'>회원가입</a>"
+                + "으로 접속하여 회원가입을 진행해주세요."
+                +"</div>";
+        helper.setText(htmlContent, true);
+        mailSender.send(message);
+        System.out.println("메일 전송 완료 ----------------------------------------");
+    }
+
+
+
+    @Transactional
+    public boolean idCheck(String username){
+        if (userRepository.findByUsername(username) != null){
+            System.out.println("true ------------------------------------------");
+            return true;
+        } else {
+            System.out.println("false -----------------------------------------");
+            return false;
+        }
     }
 
     /**
