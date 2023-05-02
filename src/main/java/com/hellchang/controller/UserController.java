@@ -44,17 +44,6 @@ public class UserController {
     }
 
     /**
-    * @methodName : signin
-    * @date : 2023-04-20 오전 10:42
-    * @author : hj
-    * @Description: 로그인 페이지로 이동
-    **/
-    @GetMapping("/signin")
-    public String signin(){
-        return "views/auth/login";
-    }
-
-    /**
     * @methodName : getMyUserInfo
     * @date : 2023-04-19 오후 5:18
     * @author : hj
