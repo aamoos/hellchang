@@ -36,7 +36,7 @@ spring: #띄어쓰기 없음
     restart:
       enable: false #운영에서는 제거
 
-  #메일 api 사용 설정
+  #네이버 smtp 설정
   mail:
     host: smtp.naver.com
     port: 465
