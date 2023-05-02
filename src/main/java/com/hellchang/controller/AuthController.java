@@ -27,7 +27,7 @@ import javax.validation.Valid;
 * @Description: 권한 관련 클래스
 **/
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/auth")
 public class AuthController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
