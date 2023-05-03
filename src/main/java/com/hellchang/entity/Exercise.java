@@ -1,10 +1,13 @@
 package com.hellchang.entity;
 
-import com.hellchang.controller.ExerciseController;
-import com.hellchang.dto.UserDto;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.util.Date;
 
 /**
  * packageName    : com.hellchang.entity
@@ -25,7 +28,7 @@ public class Exercise {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;                        //인덱스
+    private Long id;                        //인덱스 idx
 
     private Long userId;                    //사용자 idx
 
@@ -41,10 +44,11 @@ public class Exercise {
 
     private String completeYn;              //완료여부
 
-    private String exerciseDate;            //운동날짜
+    @Column
+    private LocalDate exerciseDate;            //운동날짜
 
     @Builder
-    public Exercise(Long userId,String exerciseName, int setCount, int kilogram, int reps, String delYn, String completeYn, String exerciseDate){
+    public Exercise(Long userId,String exerciseName, int setCount, int kilogram, int reps, String delYn, String completeYn, LocalDate exerciseDate){
         this.userId = userId;
         this.exerciseName = exerciseName;
         this.setCount = setCount;
@@ -81,7 +85,7 @@ public class Exercise {
     * @author : 김재성
     * @Description: 운동날짜 업데이트
     **/
-    public void updateExerciseDate(String exerciseDate){
+    public void updateExerciseDate(LocalDate exerciseDate){
         this.exerciseDate = exerciseDate;
     }
 

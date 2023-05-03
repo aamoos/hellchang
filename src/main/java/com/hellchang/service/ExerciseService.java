@@ -2,11 +2,14 @@ package com.hellchang.service;
 
 import com.hellchang.entity.Exercise;
 import com.hellchang.repository.ExerciseRepository;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +30,8 @@ import java.util.Optional;
 public class ExerciseService {
 
     private final ExerciseRepository exerciseRepository;
-    
+    private final JPAQueryFactory queryFactory;
+
     /**
     * @methodName : save
     * @date : 2023-04-19 오후 5:14
@@ -40,7 +44,7 @@ public class ExerciseService {
     }
 
     @Transactional
-    public void delete(String exerciseDate){
+    public void delete(LocalDate exerciseDate){
         exerciseRepository.deleteByExerciseDate(exerciseDate);
     }
 
@@ -70,10 +74,11 @@ public class ExerciseService {
     * @Description: 복사기능
     **/
     @Transactional
-    public void copy(int startDate, int endDate, int targetDate){
-
-        for(int i=startDate; i<=endDate; i++){
-            List<Exercise> list = exerciseRepository.findByExerciseDateAndDelYn(String.valueOf(targetDate), "N");
+    public void copy(LocalDate startDate, LocalDate endDate, LocalDate targetDate){
+        List<Exercise> list = exerciseRepository.findByExerciseDateAndDelYn(targetDate, "N");
+        //ex) startDate: 2023-05-03 endDate: 2023-05-06
+        // 선택한 날짜의 데이터를 3일부터 6일까지 데이터를 복사
+        for (LocalDate date = startDate; date.isBefore(endDate.plusDays(1)); date = date.plusDays(1)) {
             int index = 0;
             for (Exercise exercise : list) {
                 Exercise item = exercise.builder()
@@ -84,7 +89,7 @@ public class ExerciseService {
                         .reps(list.get(index).getReps())
                         .delYn(list.get(index).getDelYn())
                         .completeYn(list.get(index).getCompleteYn())
-                        .exerciseDate(String.valueOf(i))
+                        .exerciseDate(date)
                         .build();
                 //insert
                 exerciseRepository.save(item);
@@ -94,12 +99,12 @@ public class ExerciseService {
     }
 
     @Transactional
-    public void move(int moveDate, int targetDate){
+    public void move(LocalDate moveDate, LocalDate targetDate){
 
-        List<Exercise> exercises = exerciseRepository.findByExerciseDateAndDelYn(String.valueOf(targetDate), "N");
+        List<Exercise> exercises = exerciseRepository.findByExerciseDateAndDelYn(targetDate, "N");
 
         for (Exercise exercise : exercises) {
-            exercise.updateExerciseDate(String.valueOf(moveDate));
+            exercise.updateExerciseDate(moveDate);
         }
 
         exerciseRepository.saveAll(exercises);
@@ -112,7 +117,7 @@ public class ExerciseService {
     * @Description: 운동계획 삭제하기
     **/
     @Transactional
-    public void updateDelYn(String exerciseDate, String delYn){
+    public void updateDelYn(LocalDate exerciseDate){
 
         List<Exercise> exercises = exerciseRepository.findByExerciseDateAndDelYn(exerciseDate, "N");
 

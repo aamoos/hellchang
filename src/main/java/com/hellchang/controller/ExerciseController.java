@@ -6,26 +6,24 @@ import com.hellchang.entity.Exercise;
 import com.hellchang.jwt.TokenProvider;
 import com.hellchang.repository.ExerciseRepository;
 import com.hellchang.service.ExerciseService;
-import io.jsonwebtoken.Header;
+import com.querydsl.core.Tuple;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.util.Base64;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -43,6 +41,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/exercise")
 public class ExerciseController {
 
     private final ExerciseService exerciseService;
@@ -55,7 +54,7 @@ public class ExerciseController {
     * @author : 김재성
     * @Description: 오늘의 운동 리스트 조회
     **/
-    @PostMapping("/exercise/list")
+    @PostMapping("/list")
     public Result list(@RequestBody FindRequestDto findRequestDto, @RequestHeader(name="Authorization") String token) throws Exception {
 
         //삭제 안된 운동조회
@@ -72,7 +71,7 @@ public class ExerciseController {
     * @author : 김재성
     * @Description: 오늘의 운동 저장
     **/
-    @PostMapping("/exercise/save")
+    @PostMapping("/save")
     public ResponseEntity<?> save(@Valid @RequestBody ValidList<SaveRequestItem> request, BindingResult result) throws Exception {
         log.info("bindingResult ={}", result);
 
@@ -102,7 +101,7 @@ public class ExerciseController {
     * @author : 김재성
     * @Description: 복사하기 api
     **/
-    @PostMapping("/exercise/copy")
+    @PostMapping("/copy")
     public ResponseEntity<?> copy(@Valid @RequestBody CopyRequest request, BindingResult result){
         log.info("bindingResult ={}", result);
 
@@ -122,7 +121,7 @@ public class ExerciseController {
     * @author : 김재성
     * @Description: 
     **/
-    @PostMapping("/exercise/move")
+    @PostMapping("/move")
     public ResponseEntity<?> move(@Valid @RequestBody MoveRequest request, BindingResult result){
         log.info("bindingResult ={}", result);
 
@@ -142,7 +141,7 @@ public class ExerciseController {
     * @author : 김재성
     * @Description: 완료여부 업데이트
     **/
-    @PostMapping("/exercise/updateCompleteYn")
+    @PostMapping("/updateCompleteYn")
     public ResponseEntity<?> updateCompleteYn(@Valid @RequestBody UpdateCompleteYnRequest request, BindingResult result){
         log.info("bindingResult ={}", result);
 
@@ -162,7 +161,7 @@ public class ExerciseController {
     * @author : 김재성
     * @Description: 삭제여부 업데이트
     **/
-    @PostMapping("/exercise/updateDelYn")
+    @PostMapping("/updateDelYn")
     public ResponseEntity<?> updateDeleteYn(@Valid @RequestBody UpdateDeleteYnRequest request, BindingResult result){
         log.info("bindingResult ={}", result);
 
@@ -171,9 +170,16 @@ public class ExerciseController {
         }
 
         //삭제처리하기
-        exerciseService.updateDelYn(request.getExerciseDate(), request.getDelYn());
+        exerciseService.updateDelYn(request.getExerciseDate());
 
         return ResponseEntity.ok("200");
+    }
+
+    @PostMapping("/statistics")
+    public List<Tuple> statistics(@RequestHeader(name="Authorization") String token) throws Exception {
+//        List<Tuple> test = exerciseService.findCountByDate(tokenProvider.getJwtTokenUserId(token));
+//        return exerciseService.findCountByDate(tokenProvider.getJwtTokenUserId(token));
+        return null;
     }
 
     /**
@@ -184,7 +190,7 @@ public class ExerciseController {
     **/
     @Data
     static class FindRequestDto{
-        private String exerciseDate;            //운동날짜
+        private LocalDate exerciseDate;            //운동날짜
     }
 
     /**
@@ -241,7 +247,7 @@ public class ExerciseController {
 
         private String completeYn;              //완료여부
 
-        private String exerciseDate;            //운동날짜
+        private LocalDate exerciseDate;            //운동날짜
 
         public Exercise toEntity(){
             return Exercise.builder()
@@ -283,7 +289,7 @@ public class ExerciseController {
     static class UpdateDeleteYnRequest{
 
         @NotNull(message = "운동날짜는 필수값입니다.")
-        private String exerciseDate;        //운동날짜
+        private LocalDate exerciseDate;        //운동날짜
 
         @NotNull(message = "삭제여부는 필수값입니다.")
         private String delYn;               //삭제여부
@@ -299,23 +305,23 @@ public class ExerciseController {
     static class CopyRequest{
 
         @NotNull(message = "시작날짜는 필수값입니다.")
-        private int startDate;        //시작날짜
+        private LocalDate startDate;        //시작날짜
 
         @NotNull(message = "종료날짜는 필수값입니다.")
-        private int endDate;          //종료날짜
+        private LocalDate endDate;          //종료날짜
 
         @NotNull(message = "대상날짜는 필수값입니다.")
-        private int targetDate;       //대상날짜
+        private LocalDate targetDate;       //대상날짜
     }
 
     @Data
     static class MoveRequest{
 
         @NotNull(message = "이동할날짜는 필수값입니다.")
-        private int moveDate;        //시작날짜
+        private LocalDate moveDate;        //시작날짜
 
         @NotNull(message = "대상날짜는 필수값입니다.")
-        private int targetDate;       //대상날짜
+        private LocalDate targetDate;       //대상날짜
     }
 
 }
