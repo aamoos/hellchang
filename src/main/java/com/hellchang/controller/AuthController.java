@@ -53,7 +53,7 @@ public class AuthController {
 
         //username과 password 파라미터를 받아 객체 생성
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword());
+                new UsernamePasswordAuthenticationToken(loginDto.getUserid(), loginDto.getPassword());
 
         //loadUserByUsername 메서드를 통해 유저정보를 조회하여 인증 정보 생성
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
@@ -68,7 +68,7 @@ public class AuthController {
         //위에서 리턴받은 유저 정보와 권한 정보를 인증 정보를 현재 실행중인 스레드(Security Context)에 저장
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Long userId = userRepository.findByUsername(authentication.getName()).getUserId();
+        Long userId = userRepository.findByUserid(authentication.getName()).getId();
 
         //유저정보를 통해 jwt토큰 생성
         String jwt = tokenProvider.createToken(authentication, userId);

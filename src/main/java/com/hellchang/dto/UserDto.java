@@ -22,11 +22,7 @@ public class UserDto {
 
     @NotNull
     @Size(min = 3, max = 50)
-    private String nickname; //이름
-
-    @NotNull
-    @Size(min = 3, max = 50)
-    private String username;
+    private String userid;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotNull
@@ -35,11 +31,15 @@ public class UserDto {
 
     @NotNull
     @Size(min = 3, max = 50)
-    private String address;
+    private String username;
 
     @NotNull
     @Size(min = 3, max = 50)
-    private String email;
+    private String nickname;
+
+    @NotNull
+    @Size(min = 3, max = 50)
+    private String address;
 
     @NotNull
     @Size(min = 3, max = 50)

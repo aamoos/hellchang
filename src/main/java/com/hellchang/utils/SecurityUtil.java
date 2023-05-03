@@ -23,13 +23,13 @@ public class SecurityUtil {
     }
 
     /**
-    * @methodName : getCurrentUsername
+    * @methodName : getCurrentUserId
     * @date : 2023-04-20 오후 1:04
     * @author : hj
     * @Description: SecurityContext 에 유저 정보가 저장되는 시점
     **/
     //Request 가 들어올 때 JwtFilter 의 doFilter 에서 저장
-    public static Optional<String> getCurrentUsername() { //jwtfilter 클래스의 dofilter 메소드에서 저장한 security context의 인증정보에서 User정보를 리턴
+    public static Optional<String> getCurrentUserId() { //jwtfilter 클래스의 dofilter 메소드에서 저장한 security context의 인증정보에서 User정보를 리턴
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null) {
@@ -37,14 +37,14 @@ public class SecurityUtil {
             return Optional.empty();
         }
 
-        String username = null;
+        String userId = null;
         if (authentication.getPrincipal() instanceof UserDetails) {
             UserDetails springSecurityUser = (UserDetails) authentication.getPrincipal();
-            username = springSecurityUser.getUsername();
+            userId = springSecurityUser.getUsername();
         } else if (authentication.getPrincipal() instanceof String) {
-            username = (String) authentication.getPrincipal();
+            userId = (String) authentication.getPrincipal();
         }
 
-        return Optional.ofNullable(username);
+        return Optional.ofNullable(userId);
     }
 }

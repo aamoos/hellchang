@@ -66,7 +66,7 @@ public class TokenProvider implements InitializingBean {
     * @Description: 유저 정보를 가지고 AccessToken을 생성하는 메서드
     **/
     //Authentication 객체에 포함되어 있는 권한 정보들을 담은 토큰 생성
-    public String createToken(Authentication authentication, Long userId) {
+    public String createToken(Authentication authentication, Long userid) {
 
         //권한 가져오기
         String authorities = authentication.getAuthorities().stream()
@@ -80,7 +80,7 @@ public class TokenProvider implements InitializingBean {
 
         // 사용자 인덱스 정보 추가
         Map<String, Object> claims = new HashMap<>();
-        claims.put("userId", userId);
+        claims.put("userid", userid);
 
         //토큰 생성하여 리턴
         return Jwts.builder()
@@ -151,9 +151,9 @@ public class TokenProvider implements InitializingBean {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> returnMap = mapper.readValue(payload, Map.class);
 
-        int userId = (int) returnMap.get("userId");
+        int id = (int) returnMap.get("id");
 
-        return Long.valueOf(userId);
+        return Long.valueOf(id);
     }
 
     /**

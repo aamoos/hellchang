@@ -46,15 +46,36 @@ public class UserController {
     }
     
     /**
-    * @methodName : idCheck
+    * @methodName : userIdCheck
     * @date : 2023-05-02 오후 3:23
     * @author : hj
-    * @Description: username입력 후 로그인 시 로그인 or 회원가입
+    * @Description: userid입력 후 로그인 시 로그인 or 회원가입
     **/
-    @PostMapping("/auth/usernameCheck")
+    @PostMapping("/auth/userIdCheck")
     @ResponseBody
-    public ResponseEntity<Boolean> usernameCheck(@Valid @RequestBody UsernameCheckDto request){
-        return ResponseEntity.ok(userService.usernameCheck(request.getUsername()));
+    public ResponseEntity<Boolean> userIdCheck(@Valid @RequestBody userIdCheckDto request){
+        return ResponseEntity.ok(userService.userIdCheck(request.getUserid()));
+    }
+
+
+
+//    @PostMapping("/userJoin")
+//    @ResponseBody
+//    public ResponseEntity<User> setUserId(@Valid @RequestBody userIdCheckDto request){
+//        return ResponseEntity.ok(userService.setUserId(request.getUserid()));
+//    }
+
+
+    /**
+    * @methodName : nicknameCheck
+    * @date : 2023-05-03 오전 11:20
+    * @author : hj
+    * @Description: 닉네임 중복검사
+    **/
+    @PostMapping("/auth/nicknameCheck")
+    @ResponseBody
+    public ResponseEntity<Boolean> nicknameCheck(@Valid @RequestBody nicknameCheckDto request){
+        return ResponseEntity.ok(userService.nicknameCheck(request.getNickname()));
     }
 
     /**
@@ -65,20 +86,8 @@ public class UserController {
     **/
     @PostMapping("/auth/sendEmail")
     @ResponseBody
-    public void sendEmail(@Valid @RequestBody UsernameCheckDto request) throws MessagingException {
-        userService.sendEmail(request.getUsername());
-    }
-
-    /**
-    * @methodName : idCheck
-    * @date : 2023-05-02 오후 3:22
-    * @author : hj
-    * @Description:  아이디 중복 체크
-    **/
-    @PostMapping("/auth/idCheck")
-    @ResponseBody
-    public ResponseEntity<Boolean> idCheck(@Valid @RequestBody UsernameCheckDto request){
-        return ResponseEntity.ok(userService.idCheck(request.getUsername()));
+    public void sendEmail(@Valid @RequestBody userIdCheckDto request) throws MessagingException {
+        userService.sendEmail(request.getUserid());
     }
 
     /**
@@ -90,28 +99,41 @@ public class UserController {
     @GetMapping("/user")
     @ResponseBody
     @PreAuthorize("hasAnyRole('USER','ADMIN')") //user와 admin 모두 호출 가능하게 설정
-    public ResponseEntity<User> getMyUserInfo() {  //Security Context에 저장되어 있는 인증 정보의 username을 기준으로 한 유저정보 및 권한정보를 리턴
+    public ResponseEntity<User> getMyUserInfo() {  //Security Context에 저장되어 있는 인증 정보의 userid을 기준으로 한 유저정보 및 권한정보를 리턴
         return ResponseEntity.ok(userService.getMyUserWithAuthorities().get());
     }
 
-    @GetMapping("/user/{username}")
+    @GetMapping("/user/{userid}")
     @ResponseBody
     @PreAuthorize("hasAnyRole('ADMIN')")  //admin 권한만 호출 가능
-    public ResponseEntity<User> getUserInfo(@PathVariable String username) {  //username 파라미터를 통해 해당 유저의 정보 및 권한 정보 리턴
-        return ResponseEntity.ok(userService.getUserWithAuthorities(username).get());
+    public ResponseEntity<User> getUserInfo(@PathVariable String userid) {  //userid 파라미터를 통해 해당 유저의 정보 및 권한 정보 리턴
+        return ResponseEntity.ok(userService.getUserWithAuthorities(userid).get());
     }
     
     /**
-    * @methodName : usernameCheckDto
+    * @methodName : userIdCheckDto
     * @date : 2023-05-02 오후 3:49
     * @author : hj
-    * @Description:
+    * @Description: 유저 아이디 관련
     **/
     @Data
-    static class UsernameCheckDto{
+    static class userIdCheckDto{
 
         @NotNull
-        private String username;
+        private String userid;
+    }
+    
+    /**
+    * @methodName : nicknameCheckDto
+    * @date : 2023-05-03 오전 11:20
+    * @author : hj
+    * @Description: 닉네임 중복검사
+    **/
+    @Data
+    static class nicknameCheckDto{
+
+        @NotNull
+        private String nickname;
     }
 }
 

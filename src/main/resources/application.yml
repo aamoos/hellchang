@@ -41,7 +41,7 @@ spring: #띄어쓰기 없음
     host: smtp.naver.com
     port: 465
     username: gidwns617
-    password: #앱 비밀번호
+    password: 65BB4KPHR4QR
     protocol: smtps
     properties:
       mail:
