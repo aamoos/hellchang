@@ -80,7 +80,7 @@ public class TokenProvider implements InitializingBean {
 
         // 사용자 인덱스 정보 추가
         Map<String, Object> claims = new HashMap<>();
-        claims.put("userid", userid);
+        claims.put("id", userid);
 
         //토큰 생성하여 리턴
         return Jwts.builder()
@@ -143,7 +143,7 @@ public class TokenProvider implements InitializingBean {
     * @author : 김재성
     * @Description: jwt token으로 현재 로그인한 사용자 인덱스 가져오기
     **/
-    public Long getJwtTokenUserId(String token) throws JsonProcessingException {
+    public Long getJwtTokenId(String token) throws JsonProcessingException {
         String[] check = token.split("\\.");
         Base64.Decoder decoder = Base64.getDecoder();
         String payload = new String(decoder.decode(check[1]));

@@ -24,6 +24,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -58,7 +59,7 @@ public class ExerciseController {
     public Result list(@RequestBody FindRequestDto findRequestDto, @RequestHeader(name="Authorization") String token) throws Exception {
 
         //삭제 안된 운동조회
-        List<Exercise> list = exerciseRepository.findByUserIdAndExerciseDateAndDelYnOrderByIdAsc(tokenProvider.getJwtTokenUserId(token), findRequestDto.getExerciseDate(), "N");
+        List<Exercise> list = exerciseRepository.findByUserIdAndExerciseDateAndDelYnOrderByIdAsc(tokenProvider.getJwtTokenId(token), findRequestDto.getExerciseDate(), "N");
         List<ExerciseListDto> collect = list.stream()
                 .map(m -> new ExerciseListDto(m.getId(), m.getExerciseName(), m.getSetCount(), m.getKilogram(), m.getReps(), m.getDelYn(), m.getCompleteYn()))
                 .collect(Collectors.toList());
@@ -175,11 +176,15 @@ public class ExerciseController {
         return ResponseEntity.ok("200");
     }
 
+    /**
+    * @methodName : statistics
+    * @date : 2023-05-03 오후 4:21
+    * @author : 김재성
+    * @Description: 이번주 운동 통계 조회
+    **/
     @PostMapping("/statistics")
-    public List<Tuple> statistics(@RequestHeader(name="Authorization") String token) throws Exception {
-//        List<Tuple> test = exerciseService.findCountByDate(tokenProvider.getJwtTokenUserId(token));
-//        return exerciseService.findCountByDate(tokenProvider.getJwtTokenUserId(token));
-        return null;
+    public Map<LocalDate, Long> statistics(@RequestHeader(name="Authorization") String token) throws Exception {
+        return exerciseService.statistics(tokenProvider.getJwtTokenId(token));
     }
 
     /**

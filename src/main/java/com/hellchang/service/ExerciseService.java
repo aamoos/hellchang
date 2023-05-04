@@ -2,16 +2,23 @@ package com.hellchang.service;
 
 import com.hellchang.entity.Exercise;
 import com.hellchang.repository.ExerciseRepository;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.hellchang.entity.QExercise.exercise;
 
 /**
  * packageName    : com.hellchang.service
@@ -30,6 +37,9 @@ import java.util.Optional;
 public class ExerciseService {
 
     private final ExerciseRepository exerciseRepository;
+
+    private EntityManager entityManager;
+
     private final JPAQueryFactory queryFactory;
 
     /**
@@ -125,6 +135,39 @@ public class ExerciseService {
             exercise.updateDelYn("Y");
         }
         exerciseRepository.saveAll(exercises);
+    }
+
+    /**
+    * @methodName : statistics
+    * @date : 2023-05-03 오후 4:21
+    * @author : 김재성
+    * @Description: 이번주 운동 통계 조회
+    **/
+    public Map<LocalDate, Long> statistics(Long id) {
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(TemporalAdjusters.next(DayOfWeek.SUNDAY)).minusWeeks(1);
+        LocalDate endOfWeek = startOfWeek.plusDays(6);
+
+        List<Tuple> tuples = queryFactory
+                .select(exercise.exerciseDate, exercise.id.count())
+                .from(exercise)
+                .where(exercise.exerciseDate.between(startOfWeek, endOfWeek))       //이번 일주일간의 데이터 조회
+                .where(exercise.userId.eq(id)) 
+                .where(exercise.completeYn.eq("Y"))                             //운동완료
+                .where(exercise.delYn.eq("N"))                                  //삭제가 안된항목
+                .groupBy(exercise.exerciseDate)
+                .fetch();
+
+        Map<LocalDate, Long> result = tuples.stream().collect(Collectors.toMap(
+                t -> LocalDate.from(t.get(exercise.exerciseDate)),
+                t -> t.get(exercise.id.count())
+        ));
+
+        for (LocalDate date = startOfWeek; date.isBefore(endOfWeek.plusDays(1)); date = date.plusDays(1)) {
+            result.putIfAbsent(date, 0L);
+        }
+
+        return result;
     }
 
 }
