@@ -3,33 +3,41 @@ package com.hellchang.service;
 
 import com.hellchang.dto.UserDto;
 import com.hellchang.entity.Authority;
+import com.hellchang.entity.Email;
 import com.hellchang.entity.User;
+import com.hellchang.repository.EmailRepository;
 import com.hellchang.repository.UserRepository;
 import com.hellchang.utils.SecurityUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final EmailRepository emailRepository;
     private final PasswordEncoder passwordEncoder;
 
     private final JavaMailSender mailSender;
     private static final String FROM_ADDRESS = "gidwns617@naver.com";
-
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JavaMailSender mailSender) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.mailSender = mailSender;
-    }
+    private final SpringTemplateEngine thymeleafTemplateEngine;
 
     /**
     * @methodName : signup
@@ -72,32 +80,10 @@ public class UserService {
     @Transactional
     public boolean userIdCheck(String userid){
         if (userRepository.findByUserid(userid) != null){
-            System.out.println("true ------------------------------------------");
+            System.out.println("유저 존재 ------------------------------------------");
             return true;
         } else {
-            System.out.println("false -----------------------------------------");
-            return false;
-        }
-    }
-
-//    @Transactional
-//    public User setUserId(String userid){
-//
-//    }
-
-    /**
-    * @methodName : nicknameCheck
-    * @date : 2023-05-03 오전 11:21
-    * @author : hj
-    * @Description: 유저 닉네임 중복검사
-    **/
-    @Transactional
-    public boolean nicknameCheck(String nickname){
-        if (userRepository.findByNickname(nickname) != null){
-            System.out.println("true ------------------------------------------");
-            return true;
-        } else {
-            System.out.println("false -----------------------------------------");
+            System.out.println("유저 없음 -----------------------------------------");
             return false;
         }
     }
@@ -109,22 +95,92 @@ public class UserService {
     * @Description: 가입 요청 이메일 전송
     **/
     @Transactional
-    public void sendEmail(String userid) throws MessagingException {
+    public void sendEmail(String userid) throws MessagingException, IOException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
         helper.setTo(userid);
         helper.setFrom(FROM_ADDRESS);
         helper.setSubject("회원가입을 위해 이메일 인증을 진행해주세요.");
-        helper.setText("http://localhost:8080/userJoin 으로 접속하여 회원가입을 진행해주세요.", true);
-//        String htmlContent = "<p>" + mailDto.getMessage() +"<p> <img src='cid:sample-img'>";
-        String htmlContent = "<div>"
-                + "<a href='http://localhost:8080/userJoin' target='_blank' value='"+ userid + "' style='font-weight: bold; font-size:20px;'>회원가입</a>"
-                + "으로 접속하여 회원가입을 진행해주세요."
-                +"</div>";
+
+        // create the Thymeleaf context object and add the name variable
+        Context thymeleafContext = new Context();
+
+        //유저 확인 코드 생성
+        String CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"; // 영어 대문자와 숫자
+        int CODE_LENGTH = 15;
+
+        Random random = new Random();
+        StringBuilder code = new StringBuilder(CODE_LENGTH);
+
+        for (int i = 0; i < CODE_LENGTH; i++) {
+            code.append(CHARACTERS.charAt(random.nextInt(CHARACTERS.length())));
+        }
+        System.out.println(code);
+        String checkCode = code.toString();
+
+        Email email = Email.builder()
+                .userid(userid)
+                .checkcode(checkCode)
+                .build();
+
+        thymeleafContext.setVariable("checkcode", checkCode);
+        emailRepository.save(email);
+
+        // generate the HTML content from the Thymeleaf template
+        String htmlContent = thymeleafTemplateEngine.process("email.html", thymeleafContext);
+
         helper.setText(htmlContent, true);
         mailSender.send(message);
         System.out.println("메일 전송 완료 ----------------------------------------");
+
+    }
+    private String getHtmlContent(String htmlPath) throws IOException {
+        ClassPathResource resource = new ClassPathResource(htmlPath);
+        byte[] bytes = Files.readAllBytes(Paths.get(resource.getURI()));
+        return new String(bytes, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * @methodName : emailCheck
+     * @date : 2023-05-03 오후 5:22
+     * @author : hj
+     * @Description: 회원가입 시 부여된 랜덤 코드를 통해 유저 id 확인
+     **/
+    @Transactional
+    public String emailCheck(String checkcode){
+        Optional<Email> optionalEmail = emailRepository.findByCheckcode(checkcode);
+        if (optionalEmail.isPresent()){
+            Email email = optionalEmail.get();
+            String userid = email.getUserid();
+            System.out.println(" 코드에 대한 이메일 테이블에서 아이디 존재 ----------------");
+            if (userRepository.findByUserid(userid) != null){
+                System.out.println(" 코드에 대한 유저 테이블에서 아이디 존재 ------------------");
+                return null;
+            }
+            else{
+                System.out.println(" 코드에 대한 유저 테이블에서 아이디 존재하지 않음 ------------------");
+                return userid;
+            }
+        } else {
+            System.out.println("코드에 대한 아이디 존재하지 않음 -------------------");
+            return null;
+        }
+    }
+
+    /**
+    * @methodName : nicknameCheck
+    * @date : 2023-05-03 오전 11:21
+    * @author : hj
+    * @Description: 유저 닉네임 중복검사
+    **/
+    @Transactional
+    public boolean nicknameCheck(String nickname){
+        if (userRepository.findByNickname(nickname) != null){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

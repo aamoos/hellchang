@@ -4,14 +4,17 @@ import com.hellchang.dto.UserDto;
 import com.hellchang.entity.User;
 import com.hellchang.service.UserService;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 
 /**
 * @package : com.example.jwt.controller
@@ -20,7 +23,9 @@ import javax.validation.constraints.NotNull;
 * @author : hj
 * @Description: User 관련 클래스
 **/
+@Slf4j
 @Controller
+@RequestMapping("/auth")
 public class UserController {
     private final UserService userService;
 
@@ -35,11 +40,15 @@ public class UserController {
     * @author : hj
     * @Description: 회원가입 메서드
     **/
-    @PostMapping("/auth/signup")
+    @PostMapping("/signup")
     @ResponseBody
-    public ResponseEntity<User> signup(
-            @Valid @RequestBody UserDto userDto
-    ) {
+    public ResponseEntity<?> signup(@Valid @RequestBody UserDto userDto, BindingResult result) {
+        log.info("bindingResult ={}", result);
+
+        if (result.hasErrors()){
+            return ResponseEntity.badRequest().body(result.getAllErrors());
+        }
+
         return ResponseEntity.ok(userService.signup(userDto)); //http의 body, header, status를 포함한 데이터 -> 추가 서칭 필요
         //Response header에는 웹서버가 웹브라우저에 응답하는 메시지가 들어있음
         //Reponse body에는 데이터 값이 들어있음
@@ -51,31 +60,10 @@ public class UserController {
     * @author : hj
     * @Description: userid입력 후 로그인 시 로그인 or 회원가입
     **/
-    @PostMapping("/auth/userIdCheck")
+    @PostMapping("/userIdCheck")
     @ResponseBody
     public ResponseEntity<Boolean> userIdCheck(@Valid @RequestBody userIdCheckDto request){
         return ResponseEntity.ok(userService.userIdCheck(request.getUserid()));
-    }
-
-
-
-//    @PostMapping("/userJoin")
-//    @ResponseBody
-//    public ResponseEntity<User> setUserId(@Valid @RequestBody userIdCheckDto request){
-//        return ResponseEntity.ok(userService.setUserId(request.getUserid()));
-//    }
-
-
-    /**
-    * @methodName : nicknameCheck
-    * @date : 2023-05-03 오전 11:20
-    * @author : hj
-    * @Description: 닉네임 중복검사
-    **/
-    @PostMapping("/auth/nicknameCheck")
-    @ResponseBody
-    public ResponseEntity<Boolean> nicknameCheck(@Valid @RequestBody nicknameCheckDto request){
-        return ResponseEntity.ok(userService.nicknameCheck(request.getNickname()));
     }
 
     /**
@@ -84,11 +72,36 @@ public class UserController {
     * @author : hj
     * @Description: 이메일 전송 api, 로그인 시 해당 유저가 존재하지 않으면 해당 api 호출
     **/
-    @PostMapping("/auth/sendEmail")
+    @PostMapping("/sendEmail")
     @ResponseBody
-    public void sendEmail(@Valid @RequestBody userIdCheckDto request) throws MessagingException {
+    public void sendEmail(@Valid @RequestBody userIdCheckDto request) throws MessagingException, IOException {
         userService.sendEmail(request.getUserid());
     }
+
+    /**
+    * @methodName : emailCheck
+    * @date : 2023-05-03 오후 5:22
+    * @author : hj
+    * @Description: 회원가입 시 부여된 랜덤 코드를 통해 유저 id 확인
+    **/
+    @PostMapping("/emailCheck")
+    @ResponseBody
+    public ResponseEntity<String> emailCheck(@Valid @RequestBody mailCheckDto request){
+        return ResponseEntity.ok(userService.emailCheck(request.getCheckcode()));
+    }
+
+    /**
+    * @methodName : nicknameCheck
+    * @date : 2023-05-03 오전 11:20
+    * @author : hj
+    * @Description: 닉네임 중복검사
+    **/
+    @PostMapping("/nicknameCheck")
+    @ResponseBody
+    public ResponseEntity<Boolean> nicknameCheck(@Valid @RequestBody nicknameCheckDto request){
+        return ResponseEntity.ok(userService.nicknameCheck(request.getNickname()));
+    }
+
 
     /**
     * @methodName : getMyUserInfo
@@ -114,7 +127,7 @@ public class UserController {
     * @methodName : userIdCheckDto
     * @date : 2023-05-02 오후 3:49
     * @author : hj
-    * @Description: 유저 아이디 관련
+    * @Description: 유저 아이디 관련 Dto
     **/
     @Data
     static class userIdCheckDto{
@@ -122,18 +135,31 @@ public class UserController {
         @NotNull
         private String userid;
     }
-    
+
     /**
     * @methodName : nicknameCheckDto
     * @date : 2023-05-03 오전 11:20
     * @author : hj
-    * @Description: 닉네임 중복검사
+    * @Description: 닉네임 중복검사 Dto
     **/
     @Data
     static class nicknameCheckDto{
 
         @NotNull
         private String nickname;
+    }
+
+    /**
+    * @methodName : mailCheck
+    * @date : 2023-05-03 오후 5:21
+    * @author : hj
+    * @Description: 회원가입 시 랜덤 코드를 통해 아이디 확인
+    **/
+    @Data
+    static class mailCheckDto{
+
+        @NotNull
+        private String checkcode;
     }
 }
 
