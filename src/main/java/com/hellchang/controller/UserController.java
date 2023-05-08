@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.IOException;
 
 /**
@@ -132,7 +134,9 @@ public class UserController {
     @Data
     static class userIdCheckDto{
 
+        @NotBlank(message = "아이디를 입력하세요.")
         @NotNull
+        @Pattern(regexp = "^((admin)|(lhj))$|^([\\w.%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,})$", message = "이메일 형식이 올바르지 않습니다.")
         private String userid;
     }
 

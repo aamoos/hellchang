@@ -1,7 +1,8 @@
 package com.hellchang.dto;
 
-import lombok.*;
+import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -12,15 +13,10 @@ import javax.validation.constraints.Size;
 * @author : hj
 * @Description: 토큰 발급 시 사용
 **/
-@Getter
-@Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
 public class LoginDto {
 
-    @NotNull
-    @Size(min = 3, max = 50)
+    @NotBlank(message = "아이디를 입력하세요.")
     private String userid;
 
     @NotNull
