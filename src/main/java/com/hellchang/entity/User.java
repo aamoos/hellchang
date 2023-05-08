@@ -37,6 +37,9 @@ public class User {
     @Column(name = "address", length = 50)
     private String address; //주소
 
+    @Column(name = "addressDetail", length = 50)
+    private String addressDetail; //상세주소
+
     @Column(name = "phone", length = 50)
     private String phone; //핸드폰
 
