@@ -38,6 +38,10 @@ public class UserDto {
     @Size(max = 50)
     private String address;
 
+    @NotNull(message = "상세주소는 필수입력 값입니다.")
+    @Size(max = 50)
+    private String addressDetail;
+
     @NotNull(message = "번호는 필수입력 값입니다.")
     @Pattern(regexp = "^01[01][0-9]{7,8}$", message = "- 제외하여 입력해야 합니다.")
     private String phone;

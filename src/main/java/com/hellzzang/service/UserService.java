@@ -62,7 +62,8 @@ public class UserService {
                 .password(passwordEncoder.encode(userDto.getPassword()))
                 .username(userDto.getUsername())  //이름
                 .nickname(userDto.getNickname())
-                  .address(userDto.getAddress())
+                .address(userDto.getAddress())
+                .address(userDto.getAddressDetail())
                 .phone(userDto.getPhone())
                 .authorities(Collections.singleton(authority))
                 .activated(true)
