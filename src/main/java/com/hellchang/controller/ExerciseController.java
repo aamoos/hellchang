@@ -57,7 +57,7 @@ public class ExerciseController {
     **/
     @PostMapping("/list")
     public Result list(@RequestBody FindRequestDto findRequestDto, @RequestHeader(name="Authorization") String token) throws Exception {
-
+        System.out.println("token : " + token);
         //삭제 안된 운동조회
         List<Exercise> list = exerciseRepository.findByUserIdAndExerciseDateAndDelYnOrderByIdAsc(tokenProvider.getJwtTokenId(token), findRequestDto.getExerciseDate(), "N");
         List<ExerciseListDto> collect = list.stream()

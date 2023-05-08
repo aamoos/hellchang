@@ -153,8 +153,8 @@ public class ExerciseService {
                 .from(exercise)
                 .where(exercise.exerciseDate.between(startOfWeek, endOfWeek))       //이번 일주일간의 데이터 조회
                 .where(exercise.userId.eq(id)) 
-                .where(exercise.completeYn.eq("Y"))                             //운동완료
-                .where(exercise.delYn.eq("N"))                                  //삭제가 안된항목
+                .where(exercise.completeYn.eq("Y"))                            //운동완료
+                .where(exercise.delYn.eq("N"))                                 //삭제가 안된항목
                 .groupBy(exercise.exerciseDate)
                 .fetch();
 

@@ -2,10 +2,12 @@ package com.hellchang.jwt;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hellchang.repository.UserRepository;
+import com.hellchang.entity.Authority;
+import com.hellchang.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -14,10 +16,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
-
 import java.security.Key;
+import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,24 +38,26 @@ public class TokenProvider implements InitializingBean {
 
     private static final String AUTHORITIES_KEY = "auth";
 
+    //access token 시크릿키
     private final String secret;
-    private final long tokenValidityInMilliseconds;
+
+    //access token 만료시간
+    private long tokenValidityInMilliseconds = Duration.ofMinutes(30).toMillis(); // 만료시간 30분
+
+    //refresh token 만료시간
+    private long refreshTokenValidityInMilliseconds = Duration.ofDays(14).toMillis(); // 만료시간 2주
 
     private Key key;
 
-    @Value("${jwt.secret}")
-    private String secretKey;
-
     public TokenProvider(    //application.yml에서 정의한 header와 validity 값 주입
-                             @Value("${jwt.secret}") String secret,
-                             @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds, UserRepository userRepository) {
+                             @Value("${jwt.secret}") String secret) {
         this.secret = secret;
-        this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000;
     }
 
     //빈이 생성이 되고 의존성 주입 이후에 secret값을 Base64 Decode해서 key 변수에 할당하기 위함
     @Override
     public void afterPropertiesSet() {
+        //access token
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
@@ -66,27 +69,46 @@ public class TokenProvider implements InitializingBean {
     * @Description: 유저 정보를 가지고 AccessToken을 생성하는 메서드
     **/
     //Authentication 객체에 포함되어 있는 권한 정보들을 담은 토큰 생성
-    public String createToken(Authentication authentication, Long userid) {
+    public String createToken(User user) {
 
         //권한 가져오기
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+//        String authorities = authentication.getAuthorities().stream()
+//                .map(GrantedAuthority::getAuthority)
+//                .collect(Collectors.joining(","));
 
-        long now = (new Date()).getTime(); //현재 시간을 밀리초로 환산
+        //권한 가져오기
+        String authorities = convertAuthoritiesToString(user.getAuthorities());
 
-        //현재 시간과 yml 파일에서 설정한 토큰 만료시간을 붙임
+        //현재 시간을 밀리초로 환산
+        long now = (new Date()).getTime();
+
+        //만료시간 30분으로 설정
         Date validity = new Date(now + this.tokenValidityInMilliseconds);
 
         // 사용자 인덱스 정보 추가
         Map<String, Object> claims = new HashMap<>();
-        claims.put("id", userid);
+        claims.put("id", user.getId());
 
         //토큰 생성하여 리턴
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(authentication.getName())
+                .setSubject(user.getUserid())
                 .claim(AUTHORITIES_KEY, authorities) //JWT의 body이고 key-value 데이터를 추가함. 여기서는 권한정보
+                .setExpiration(validity)  //만료일 설정
+                .signWith(key, SignatureAlgorithm.HS512) //HS512 알고리즘 적용
+                .compact(); //토큰 생성
+    }
+
+    public String createRefreshToken(User user) {
+
+        //현재 시간을 밀리초로 환산
+        long now = (new Date()).getTime();
+
+        //만료시간 2주로 설정
+        Date validity = new Date(now + this.refreshTokenValidityInMilliseconds);
+
+        return Jwts.builder()
+                .setSubject(user.getUserid())
                 .setExpiration(validity)  //만료일 설정
                 .signWith(key, SignatureAlgorithm.HS512) //HS512 알고리즘 적용
                 .compact(); //토큰 생성
@@ -101,7 +123,6 @@ public class TokenProvider implements InitializingBean {
     //토큰에 담겨있는 권한 정보들을 이용해 Authentication 객체를 리턴
     //JwtFilter에서 사용됨
     public Authentication getAuthentication(String token) {
-
         //토큰 복호화
         Claims claims = Jwts
                 .parserBuilder()
@@ -117,7 +138,7 @@ public class TokenProvider implements InitializingBean {
                         .collect(Collectors.toList());
 
         //UserDetails 객체를 만들어서 Authentication 리턴
-        User principal = new User(claims.getSubject(), "", authorities);
+        org.springframework.security.core.userdetails.User principal = new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
@@ -177,5 +198,20 @@ public class TokenProvider implements InitializingBean {
             logger.info("JWT 토큰이 잘못되었습니다.");
         }
         return false;
+    }
+
+    public static String convertAuthoritiesToString(Set<Authority> authorities) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (Authority authority : authorities) {
+            stringBuilder.append(authority.getAuthorityName()).append(", ");
+        }
+
+        // Remove the trailing comma and space
+        if (stringBuilder.length() > 2) {
+            stringBuilder.setLength(stringBuilder.length() - 2);
+        }
+
+        return stringBuilder.toString();
     }
 }
