@@ -16,7 +16,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
 * @package : com.example.jwt.controller
@@ -64,7 +66,12 @@ public class UserController {
     **/
     @PostMapping("/userIdCheck")
     @ResponseBody
-    public ResponseEntity<Boolean> userIdCheck(@Valid @RequestBody userIdCheckDto request){
+    public ResponseEntity<?> userIdCheck(@Valid @RequestBody userIdCheckDto request, BindingResult result){
+        log.info("bindingResult ={}", result);
+
+        if (result.hasErrors()){
+            return ResponseEntity.badRequest().body(result.getAllErrors());
+        }
         return ResponseEntity.ok(userService.userIdCheck(request.getUserid()));
     }
 
@@ -104,6 +111,30 @@ public class UserController {
         return ResponseEntity.ok(userService.nicknameCheck(request.getNickname()));
     }
 
+    /**
+     * @methodName : userIndexCheck
+     * @date : 2023-05-09 오후 4:02
+     * @author : hj
+     * @Description: 회원 index 번호 비교하여 회원정보 불러옴
+     **/
+    @PostMapping("/editProfile")
+    @ResponseBody
+    public ResponseEntity<Optional<User>> userIndexCheck(@RequestBody userIndexDto request){
+        return ResponseEntity.ok(userService.userIndexCheck(request.getId()));
+    }
+
+    /**
+    * @methodName : userChangeInfo
+    * @date : 2023-05-09 오후 5:51
+    * @author : hj
+    * @Description: 유저 정보 변경
+    **/
+    @PostMapping("/userChangeInfo")
+    @ResponseBody
+    public ResponseEntity<?> userChangeInfo(@Valid @RequestBody userInfoChangeDto request){
+        userService.userChangeInfo(request.getId(), request.getAddress(), request.getAddressDetail(), request.getPhone());
+        return ResponseEntity.ok("200");
+    }
 
     /**
     * @methodName : getMyUserInfo
@@ -164,6 +195,44 @@ public class UserController {
 
         @NotNull
         private String checkcode;
+    }
+    
+    /**
+    * @methodName : userIndexDto
+    * @date : 2023-05-09 오후 3:53
+    * @author : hj
+    * @Description: 회원 번호
+    **/
+    @Data
+    static class userIndexDto{
+
+        @NotNull
+        private Long id;
+    }
+
+    /**
+    * @methodName : userInfoChangeDto
+    * @date : 2023-05-09 오후 5:51
+    * @author : hj
+    * @Description: 유저 정보 변경 Dto
+    **/
+    @Data
+    static class userInfoChangeDto{
+
+        @NotNull
+        private Long id;
+
+        @NotBlank(message = "주소는 필수입력 값입니다.")
+        @Size(max = 50)
+        private String address;
+
+        @NotBlank(message = "상세주소는 필수입력 값입니다.")
+        @Size(max = 50)
+        private String addressDetail;
+
+        @NotNull(message = "번호는 필수입력 값입니다.")
+        @Pattern(regexp = "^01[01][0-9]{7,8}$", message = "전화번호 형식이 올바르지 않습니다.(-제외하고 입력)")
+        private String phone;
     }
 }
 

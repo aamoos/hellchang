@@ -31,7 +31,7 @@ public class UserDto {
     private String username;
 
     @NotNull(message = "닉네임은 필수입력 값입니다.")
-//    @Pattern(regexp = "^[가-힣a-zA-Z0-9]{2,12}$", message = "닉네임은 2~15글자 사이어야 합니다.")
+    @Pattern(regexp = "^[가-힣a-zA-Z0-9]{2,12}$", message = "닉네임은 2~15글자 사이어야 합니다.")
     private String nickname;
 
     @NotNull(message = "주소는 필수입력 값입니다.")

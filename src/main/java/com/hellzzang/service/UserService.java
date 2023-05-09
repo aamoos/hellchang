@@ -5,6 +5,7 @@ import com.hellzzang.dto.UserDto;
 import com.hellzzang.entity.Authority;
 import com.hellzzang.entity.Email;
 import com.hellzzang.entity.User;
+import com.hellzzang.exception.UserNotFoundException;
 import com.hellzzang.repository.EmailRepository;
 import com.hellzzang.repository.UserRepository;
 import com.hellzzang.utils.SecurityUtil;
@@ -63,7 +64,7 @@ public class UserService {
                 .username(userDto.getUsername())  //이름
                 .nickname(userDto.getNickname())
                 .address(userDto.getAddress())
-                .address(userDto.getAddressDetail())
+                .addressDetail(userDto.getAddressDetail())
                 .phone(userDto.getPhone())
                 .authorities(Collections.singleton(authority))
                 .activated(true)
@@ -181,6 +182,37 @@ public class UserService {
             return true;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * @methodName : userIndexCheck
+     * @date : 2023-05-09 오후 4:02
+     * @author : hj
+     * @Description: 회원 index 번호 비교하여 회원정보 불러옴
+     **/
+    @Transactional
+    public Optional<User> userIndexCheck(Long id){
+        return userRepository.findById(id);
+    }
+
+    /**
+     * @methodName : userChangeInfo
+     * @date : 2023-05-09 오후 5:51
+     * @author : hj
+     * @Description: 유저 정보 변경
+     **/
+    @Transactional
+    public void userChangeInfo(Long id, String address, String addressDetail, String phone){
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setAddress(address);
+            user.setAddressDetail(addressDetail);
+            user.setPhone(phone);
+            userRepository.save(user);
+        } else {
+            throw new UserNotFoundException(id);
         }
     }
 
