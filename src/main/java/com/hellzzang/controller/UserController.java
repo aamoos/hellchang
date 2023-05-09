@@ -117,7 +117,7 @@ public class UserController {
      * @author : hj
      * @Description: 회원 index 번호 비교하여 회원정보 불러옴
      **/
-    @PostMapping("/editProfile")
+    @PostMapping("/userInfo")
     @ResponseBody
     public ResponseEntity<Optional<User>> userIndexCheck(@RequestBody userIndexDto request){
         return ResponseEntity.ok(userService.userIndexCheck(request.getId()));
