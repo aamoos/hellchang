@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
@@ -229,18 +231,18 @@ public class ExerciseController {
     static class SaveRequestItem{
         private Long userId;                    //사용자 idx
 
-        @NotNull(message = "운동명은 필수 입력 값입니다.")
+        @NotBlank(message = "운동명은 필수 입력 값입니다.")
         private String exerciseName;            //운동명
 
-        @NotNull(message = "세트는 최소 1개 이상이어야 합니다.")
+        @NotBlank(message = "세트는 최소 1개 이상이어야 합니다.")
         @Min(value = 1, message = "세트는 최소 1개 이상이어야 합니다.")
         private int setCount;                   //세트
 
-        @NotNull(message = "kg은 최소 1kg 이상이어야 합니다.")
+        @NotBlank(message = "kg은 최소 1kg 이상이어야 합니다.")
         @Min(value = 1, message = "kg은 최소 1kg 이상이어야 합니다.")
         private int kilogram;                   //kg
 
-        @NotNull(message = "횟수는 최소 1회 이상이어야 합니다.")
+        @NotBlank(message = "횟수는 최소 1회 이상이어야 합니다.")
         @Min(value = 1, message = "횟수는 최소 1회 이상이어야 합니다.")
         private int reps;                       //회
 
@@ -273,10 +275,10 @@ public class ExerciseController {
     @Data
     static class UpdateCompleteYnRequest{
 
-        @NotNull(message = "id는 필수 입력값 입니다.")
+        @NotBlank(message = "id는 필수 입력값 입니다.")
         private Long id;
 
-        @NotNull(message = "완료여부는 필수 입력값 입니다.")
+        @NotBlank(message = "완료여부는 필수 입력값 입니다.")
         private String completeYn;
     }
 
@@ -289,10 +291,10 @@ public class ExerciseController {
     @Data
     static class UpdateDeleteYnRequest{
 
-        @NotNull(message = "운동날짜는 필수값입니다.")
+        @NotBlank(message = "운동날짜는 필수값입니다.")
         private LocalDate exerciseDate;        //운동날짜
 
-        @NotNull(message = "삭제여부는 필수값입니다.")
+        @NotBlank(message = "삭제여부는 필수값입니다.")
         private String delYn;               //삭제여부
     }
 
@@ -305,23 +307,23 @@ public class ExerciseController {
     @Data
     static class CopyRequest{
 
-        @NotNull(message = "시작날짜는 필수값입니다.")
+        @NotBlank(message = "시작날짜는 필수값입니다.")
         private LocalDate startDate;        //시작날짜
 
-        @NotNull(message = "종료날짜는 필수값입니다.")
+        @NotBlank(message = "종료날짜는 필수값입니다.")
         private LocalDate endDate;          //종료날짜
 
-        @NotNull(message = "대상날짜는 필수값입니다.")
+        @NotBlank(message = "대상날짜는 필수값입니다.")
         private LocalDate targetDate;       //대상날짜
     }
 
     @Data
     static class MoveRequest{
 
-        @NotNull(message = "이동할날짜는 필수값입니다.")
+        @NotBlank(message = "이동할날짜는 필수값입니다.")
         private LocalDate moveDate;        //시작날짜
 
-        @NotNull(message = "대상날짜는 필수값입니다.")
+        @NotBlank(message = "대상날짜는 필수값입니다.")
         private LocalDate targetDate;       //대상날짜
     }
 
