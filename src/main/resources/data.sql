@@ -1,8 +1,8 @@
 --SpringBoot 서버가 새로 시작할 때 이 파일의 쿼리들이 자동으로 실행됨
 -- front 사용자 추가
-DELETE FROM USERS;
-DELETE FROM AUTHORITY;
 DELETE FROM USER_AUTHORITY;
+DELETE FROM AUTHORITY;
+DELETE FROM USERS;
 
 --front 사용자 추가
 INSERT INTO USERS (USER_INDEX, USERID, PASSWORD, USERNAME, NICKNAME, ADDRESS, ADDRESS_DETAIL, PHONE, ACTIVATED) VALUES (1, 'admin', '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'admin', 'admin', 'admin', 'admin', '010', 1);
