@@ -4,21 +4,10 @@
     <meta charset="UTF-8">
     <title>Title</title>
 
-  <style>
-    .joinMessage{
-      font-weight : bold;
-      font-size: 20px;
-      color : green;
-      text-decoration: none;
-    }
-    .joinMessage:hover{
-      color : red;
-    }
-  </style>
 </head>
 <body>
   <div>
-        <a class="joinMessage" th:href="@{http://localhost:8080/userJoin/{checkcode}(checkcode=${checkcode})}" target="_blank" style="font-size:20px; color:green;">회원가입</a>
+        <a th:class="joinMessage" th:href="@{http://localhost:8080/userJoin/{checkcode}(checkcode=${checkcode})}" target="_blank" style="font-size:20px; color:green;">회원가입</a>
         <p>접속하여 회원가입을 진행해주세요.</p>
   </div>
 </body>

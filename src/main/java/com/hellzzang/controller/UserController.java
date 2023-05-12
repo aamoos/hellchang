@@ -13,10 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -64,7 +61,7 @@ public class UserController {
     * @author : hj
     * @Description: userid입력 후 로그인 시 로그인 or 회원가입
     **/
-    @PostMapping("/userIdCheck")
+    @PostMapping("/userExistenceCheck")
     @ResponseBody
     public ResponseEntity<?> userIdCheck(@Valid @RequestBody userIdCheckDto request, BindingResult result){
         log.info("bindingResult ={}", result);
@@ -134,6 +131,18 @@ public class UserController {
     public ResponseEntity<?> userChangeInfo(@Valid @RequestBody userInfoChangeDto request){
         userService.userChangeInfo(request.getId(), request.getAddress(), request.getAddressDetail(), request.getPhone());
         return ResponseEntity.ok("200");
+    }
+
+    /**
+     * @methodName : userCheckPassword
+     * @date : 2023-05-11 오전 10:17
+     * @author : hj
+     * @Description: 유저의 index에 해당하는 비밀번호를 비교하여 존재하면 비밀번호 변경
+     **/
+    @PostMapping("/userChangePassword")
+    @ResponseBody
+    public ResponseEntity<String> userChangePassword(@Valid @RequestBody userPasswordCheckDto request){
+        return ResponseEntity.ok(userService.userChangePassword(request.getId(), request.getOldPassword(), request.getNewPassword()));
     }
 
     /**
@@ -233,6 +242,29 @@ public class UserController {
         @NotNull(message = "번호는 필수입력 값입니다.")
         @Pattern(regexp = "^01[01][0-9]{7,8}$", message = "전화번호 형식이 올바르지 않습니다.(-제외하고 입력)")
         private String phone;
+    }
+
+    /**
+    * @package : com.hellzzang.controller
+    * @name : UserController.java
+    * @date : 2023-05-11 오후 1:30
+    * @author : hj
+    * @Description: 비밀번호 변경 Dto
+    **/
+    @Data
+    static class userPasswordCheckDto{
+
+        @NotNull
+        private Long id;
+        
+        @NotNull
+        @NotEmpty(message = "기존 비밀번호를 입력하세요.")
+        private String oldPassword;
+
+        @NotNull
+        @NotEmpty(message = "변경하실 비밀번호를 입력하세요.")
+        @Pattern(regexp = "^(admin)$|^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*])[a-zA-Z\\d!@#$%^&*]{8,14}$", message = "비밀번호는 8~14글자 사이며 영어, 숫자, 특수문자 필수입니다.")
+        private String newPassword;
     }
 }
 

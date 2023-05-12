@@ -22,6 +22,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     //username을 기준으로 user정보를 조회하며 권한 정보를 같이 가져옴
 
     User findByUserid(String userid);
-
     User findByNickname(String nickname);
 }

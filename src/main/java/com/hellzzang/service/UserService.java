@@ -129,6 +129,20 @@ public class UserService {
         thymeleafContext.setVariable("checkcode", checkCode);
         emailRepository.save(email);
 
+
+
+        //css 파일 경로
+//        String cssPath = "/static/email.css";
+//        InputStream inputStream = getClass().getResourceAsStream(cssPath);
+//        String cssContent = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        // CSS 파일을 문자열로 읽어옴
+
+        // HTML 템플릿에 CSS 파일 추가
+//        thymeleafContext.setVariable("cssContent", cssPath);
+
+
+
+
         // generate the HTML content from the Thymeleaf template
         String htmlContent = thymeleafTemplateEngine.process("email.html", thymeleafContext);
 
@@ -215,6 +229,34 @@ public class UserService {
             throw new UserNotFoundException(id);
         }
     }
+
+    /**
+    * @methodName : userCheckPassword
+    * @date : 2023-05-11 오전 10:17
+    * @author : hj
+    * @Description: 유저의 index에 해당하는 비밀번호를 비교하여 존재하면 비밀번호 변경
+    **/
+    @Transactional
+    public String userChangePassword(Long id, String oldpassword, String newpassword){
+        Optional<User> optionalUser = userRepository.findById(id);
+        if(optionalUser.isPresent()){
+            if(passwordEncoder.matches(oldpassword, optionalUser.get().getPassword())){
+                if(!passwordEncoder.matches(newpassword, optionalUser.get().getPassword())){
+                    User user = optionalUser.get();
+                    user.setPassword(passwordEncoder.encode(newpassword));
+                    userRepository.save(user);
+                    return "t";
+                }else{
+                    return "기존 비밀번호와 변경할 비밀번호가 동일합니다.";
+                }
+            }else{
+                return "기존 비밀번호가 올바르지 않습니다.";
+            }
+        } else{
+            return "회원이 존재하지 않습니다.";
+        }
+    }
+
 
     /**
     * @methodName : getMyUserWithAuthorities

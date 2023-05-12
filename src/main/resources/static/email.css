@@ -1,0 +1,12 @@
+div{
+    background-color : yellow;
+}
+.joinMessage{
+      font-weight : bold;
+      font-size: 20px;
+      color : yellow;
+      text-decoration: none;
+    }
+.joinMessage:hover{
+      color : pink;
+}
