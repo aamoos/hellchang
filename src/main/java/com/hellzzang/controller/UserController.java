@@ -176,7 +176,7 @@ public class UserController {
 
         @NotBlank(message = "아이디를 입력하세요.")
         @NotNull
-        @Pattern(regexp = "^((admin)|(lhj))$|^([\\w.%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,})$", message = "이메일 형식이 올바르지 않습니다.")
+        @Pattern(regexp = "^([\\w.%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,})$", message = "이메일 형식이 올바르지 않습니다.")
         private String userid;
     }
 
