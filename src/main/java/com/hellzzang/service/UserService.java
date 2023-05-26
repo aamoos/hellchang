@@ -10,7 +10,6 @@ import com.hellzzang.repository.EmailRepository;
 import com.hellzzang.repository.UserRepository;
 import com.hellzzang.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,9 +21,8 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Random;
@@ -54,6 +52,11 @@ public class UserService {
             throw new RuntimeException("이미 가입되어 있는 유저입니다.");
         }
 
+        LocalDateTime currentDate = LocalDateTime.now();
+        String blockDateFormat = currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); //저장될 패턴
+        currentDate = LocalDateTime.parse(blockDateFormat, dateFormatter); //String 데이터를 LocalDateTime 형태로 파싱
+
         Authority authority = Authority.builder()
                 .authorityName("ROLE_USER")  //권한을 USER 설정
                 .build();
@@ -66,6 +69,12 @@ public class UserService {
                 .address(userDto.getAddress())
                 .addressDetail(userDto.getAddressDetail())
                 .phone(userDto.getPhone())
+                .dorYn("N")
+                .delYn("N")
+                .joinDate(currentDate)
+                .blockYn("N")
+                .blockDate(currentDate)
+                .lastLoginDate(currentDate)
                 .authorities(Collections.singleton(authority))
                 .activated(true)
                 .build();
@@ -103,7 +112,7 @@ public class UserService {
 
         helper.setTo(userid);
         helper.setFrom(FROM_ADDRESS);
-        helper.setSubject("회원가입을 위해 이메일 인증을 진행해주세요.");
+        helper.setSubject("<Hellzzang> 회원가입을 위해 이메일 인증을 진행해주세요.");
 
         // create the Thymeleaf context object and add the name variable
         Context thymeleafContext = new Context();
@@ -129,20 +138,6 @@ public class UserService {
         thymeleafContext.setVariable("checkcode", checkCode);
         emailRepository.save(email);
 
-
-
-        //css 파일 경로
-//        String cssPath = "/static/email.css";
-//        InputStream inputStream = getClass().getResourceAsStream(cssPath);
-//        String cssContent = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-        // CSS 파일을 문자열로 읽어옴
-
-        // HTML 템플릿에 CSS 파일 추가
-//        thymeleafContext.setVariable("cssContent", cssPath);
-
-
-
-
         // generate the HTML content from the Thymeleaf template
         String htmlContent = thymeleafTemplateEngine.process("email.html", thymeleafContext);
 
@@ -150,11 +145,6 @@ public class UserService {
         mailSender.send(message);
         System.out.println("메일 전송 완료 ----------------------------------------");
 
-    }
-    private String getHtmlContent(String htmlPath) throws IOException {
-        ClassPathResource resource = new ClassPathResource(htmlPath);
-        byte[] bytes = Files.readAllBytes(Paths.get(resource.getURI()));
-        return new String(bytes, StandardCharsets.UTF_8);
     }
 
     /**

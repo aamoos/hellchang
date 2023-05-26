@@ -6,15 +6,84 @@
 
 </head>
 <body>
-  <div>
-        <a th:class="joinMessage" th:href="@{http://localhost:8080/userJoin/{checkcode}(checkcode=${checkcode})}" target="_blank" style="font-size:20px; color:green;">회원가입</a>
-        <p>접속하여 회원가입을 진행해주세요.</p>
+  <div style="background:#ffffff;margin:0;padding:0;font-family:'Apple SD Gothic', '맑은고딕', 'Nanum Gothic', sans-serif">
+      <div style="background:#ffffff;margin:0 auto;padding:0;width:100%;max-width:600px;box-sizing:border-box;-webkit-text-size-adjust:none">
+          <table align="center" width="100%" border="0" cellpadding="0" cellspacing="0" style="background:#fff;margin:0;padding:0;max-width:600px">
+              <tbody>
+              <tr>
+                  <td style="background:#ffffff;padding:63px 2px 43px">
+                      <a th:href="@{http://localhost:8080/userLogin}" rel="noreferrer noopener" target="_blank"><img th:src="@{classpath:/static/images/hellzzangLogo-circle.png}" width="116" height="38" border="0" alt="점핏" style="display:block;" loading="lazy"></a>
+                  </td>
+              </tr>
+              <tr>
+                  <td style="background:#ffffff;padding: 0 2px 0;">
+                      <table align="center" width="100%" border="0" cellpadding="0" cellspacing="0">
+                          <!--- - - - - - - - - -tbody start- - - - - - - - -->
+                          <tbody>
+                          <tr>
+                              <td align="left" style="background:#fff;padding:0">
+                                  <p style="margin:0 0 24px;padding:0;font-family:'Apple SD Gothic', '맑은고딕', 'Nanum Gothic', sans-serif;font-size:26px;color:#000;letter-spacing:-1px;line-height:32px;font-weight:bold">
+                                      반갑습니다. 운동의 모든 것, Hellzzang 입니다!
+                                  </p>
+                                  <div style="margin:30px 0;background:#fefefe;border-radius:3px">
+                                      <table align="center" width="100%" border="0" bgcolor="#feebec" cellpadding="0" style="border:0">
+                                          <tbody>
+                                          <tr>
+                                              <td align="left" style="font-family:'Apple SD Gothic', '맑은고딕', 'Nanum Gothic',sans-serif;padding:20px;">
+                                                  <p style="margin:0;padding:0;font-family:'Apple SD Gothic', '맑은고딕', 'Nanum Gothic',sans-serif;font-size:15px;color:#404040;letter-spacing:-1px;line-height:24px">
+                                                      대상계정 : j****@naver.com
+                                                  </p>
+                                              </td>
+                                          </tr>
+                                          </tbody>
+                                      </table>
+                                  </div>
+                                  <p style="margin:0;padding:0;font-family:'Apple SD Gothic', '맑은고딕', 'Nanum Gothic',sans-serif;font-size:15px;color:#404040;letter-spacing:-1px;line-height:24px;word-break: keep-all">
+                                      <b>Hellzzang 회원가입을 위해 하단의 링크를 클릭하세요.</b>
+                                  </p>
+                                  <table align="center" width="250" border="0" cellpadding="0" cellspacing="0" style="border:0">
+                                      <tbody>
+                                      <tr>
+                                          <td height="25"></td>
+                                      </tr>
+                                      <tr>
+                                          <td align="center" height="56" style="border-radius:4px;background:#000">
+                                              <a th:href="@{http://localhost:8080/userJoin/{checkcode}(checkcode=${checkcode})}" target="_blank" style="display:block;line-:56px;border:0;font-family:'apple sd gothic', '맑은고딕', 'nanum gothic',sans-serif;color:#5cf636;font-size:16px;letter-spacing:-0.5px;text-decoration:none;font-weight:bold" rel="noreferrer noopener">
+                                                  Hellzzang 회원가입
+                                              </a>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td height="25"></td>
+                                      </tr>
+                                      </tbody>
+                                  </table>
+                              </td>
+                          </tr>
+                          <!--- - - - - - - - - -tbody end- - - - - - - - - - -->
+                          </tbody>
+                      </table>
+                  </td>
+              </tr>
+              <tr>
+                  <td align="left" style="border-top:1px solid #ececec;background:#fff;padding:0 0 72px">
+                      <p style="margin:24px 0;padding:0;font-family:'Apple SD Gothic', '맑은고딕', 'Nanum Gothic',sans-serif;color:#909090;font-size:13px;line-height:18px;letter-spacing:-0.5px;text-align:left">
+                          ※ 본 메일은 발신전용 메일로 회신을 받을 수 없습니다.<br>
+                          ©Hellzzang All Rights Reserved.<br>
+                          대한민국 여기저기<br>
+                          고객센터 : 010-9180-7250, jun950617@naver.com (점심시간 11:30 - 14:00, 월화수목금토일 휴무)
+                      </p>
+                      <div style="font-family:'Apple SD Gothic', '맑은고딕', 'Nanum Gothic',sans-serif;color:#909090;font-size:13px;line-height:16px;letter-spacing:-0.5px;text-align:left">
+                          <a href="/" target="_blank" style="font-family:'apple sd gothic', '맑은고딕', 'nanum gothic',sans-serif;color:#909090;font-size:13px;line-:16px;letter-spacing:-0.5px;text-align:left;text-decoration:underline" rel="noreferrer noopener">이용약관</a>
+                          &nbsp;&nbsp;|&nbsp;&nbsp;
+                          <a href="/" target="_blank" style="font-family:'apple sd gothic', '맑은고딕', 'nanum gothic',sans-serif;color:#909090;font-size:13px;line-:16px;letter-spacing:-0.5px;text-align:left;text-decoration:underline" rel="noreferrer noopener">개인정보
+                              처리방침</a>
+                      </div>
+                  </td>
+              </tr>
+              </tbody>
+          </table>
+      </div>
   </div>
 </body>
-
-
-<script>
-
-
-</script>
 </html>

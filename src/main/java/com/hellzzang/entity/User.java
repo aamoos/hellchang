@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 //UserService에서 설정
@@ -42,6 +43,18 @@ public class User {
 
     @Column(name = "phone", length = 50)
     private String phone; //핸드폰
+
+    private String dorYn; //휴면여부
+
+    private String delYn; //삭제여부
+    
+    private LocalDateTime joinDate; //가입날짜
+
+    private String blockYn; //정지여부
+
+    private LocalDateTime blockDate; //정지날짜
+
+    private LocalDateTime lastLoginDate; //마지막 접속날짜
 
     @JsonIgnore
     @Column(name = "activated")

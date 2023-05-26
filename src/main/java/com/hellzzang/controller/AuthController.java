@@ -20,6 +20,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @package : com.example.jwt.controller
@@ -48,6 +50,8 @@ public class AuthController {
      * @author : hj
      * @Description: 로그인 시 토큰 발급하는 메서드
      **/
+
+    @CrossOrigin
     @PostMapping("/authenticate")
     public ResponseEntity<TokenDto> authorize(@Valid @RequestBody LoginDto loginDto) {
         // form 태그 형식으로 데이터를 전송 받으므로 @RequestBody 불필요
@@ -70,19 +74,40 @@ public class AuthController {
         //위에서 리턴받은 유저 정보와 권한 정보를 인증 정보를 현재 실행중인 스레드(Security Context)에 저장
 //        SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        LocalDateTime lastLoginDate = LocalDateTime.now();
+        String lastLoginDateFormat = lastLoginDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); //저장될 패턴
+        lastLoginDate = LocalDateTime.parse(lastLoginDateFormat, dateFormatter); //String 데이터를 LocalDateTime 형태로 파싱
+
         // 사용자 정보 조회
         User user = userRepository.findByUserid(loginDto.getUserid());
 
         //로그인한 사용자가 맞는지 체크
         if(user != null && passwordEncoder.matches(loginDto.getPassword(), user.getPassword())){
-            //유저정보를 통해 jwt토큰 생성
-            String jwt = tokenProvider.createToken(user);
-            String refreshJwt = tokenProvider.createRefreshToken(user);
+            //현재 계정이 block되어 있는지 확인
+            if(user.getBlockYn().equals("N")) {
+                //유저정보를 통해 jwt토큰 생성
+                String jwt = tokenProvider.createToken(user);
+                String refreshJwt = tokenProvider.createRefreshToken(user);
 
-            //헤더에 토큰정보를 포함
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
-            return new ResponseEntity<>(new TokenDto(jwt, refreshJwt), httpHeaders, HttpStatus.OK);
+                //헤더에 토큰정보를 포함
+                HttpHeaders httpHeaders = new HttpHeaders();
+                httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
+
+                //마지막 로그인 접속 기록
+                user.setLastLoginDate(lastLoginDate);
+                //휴면처리 되어있을 경우 해제
+                if(user.getDorYn().equals("Y")){
+                    user.setDorYn("N");
+                }
+                userRepository.save(user);
+
+                return new ResponseEntity<>(new TokenDto(jwt, refreshJwt), httpHeaders, HttpStatus.OK);
+            }
+            else{
+                String blockDateFormat = user.getBlockDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH시 mm분"));
+                return new ResponseEntity(blockDateFormat+" 까지 이용하실 수 없습니다.", HttpStatus.UNAUTHORIZED);
+            }
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
