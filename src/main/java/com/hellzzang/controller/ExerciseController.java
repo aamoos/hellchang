@@ -2,6 +2,7 @@ package com.hellzzang.controller;
 
 import com.hellzzang.common.Result;
 import com.hellzzang.common.ValidList;
+import com.hellzzang.dto.ExerciseDto;
 import com.hellzzang.entity.Exercise;
 import com.hellzzang.jwt.TokenProvider;
 import com.hellzzang.repository.ExerciseRepository;
@@ -62,6 +63,13 @@ public class ExerciseController {
                 .map(m -> new ExerciseListDto(m.getId(), m.getExerciseName(), m.getSetCount(), m.getKilogram(), m.getReps(), m.getDelYn(), m.getCompleteYn()))
                 .collect(Collectors.toList());
         return new Result(collect.size(), collect);
+    }
+
+    @PostMapping("/getCalendarData")
+    public List<ExerciseDto> getCalendarData(@RequestHeader(name="Authorization") String token) throws Exception {
+        System.out.println("token : " + token);
+        //삭제 안된 운동조회
+        return exerciseService.getCalendarData(tokenProvider.getJwtTokenId(token));
     }
 
     /**
@@ -234,15 +242,12 @@ public class ExerciseController {
         @NotBlank(message = "운동명은 필수 입력 값입니다.")
         private String exerciseName;            //운동명
 
-        @NotBlank(message = "세트는 최소 1개 이상이어야 합니다.")
         @Min(value = 1, message = "세트는 최소 1개 이상이어야 합니다.")
         private int setCount;                   //세트
 
-        @NotBlank(message = "kg은 최소 1kg 이상이어야 합니다.")
         @Min(value = 1, message = "kg은 최소 1kg 이상이어야 합니다.")
         private int kilogram;                   //kg
 
-        @NotBlank(message = "횟수는 최소 1회 이상이어야 합니다.")
         @Min(value = 1, message = "횟수는 최소 1회 이상이어야 합니다.")
         private int reps;                       //회
 
@@ -275,10 +280,8 @@ public class ExerciseController {
     @Data
     static class UpdateCompleteYnRequest{
 
-        @NotBlank(message = "id는 필수 입력값 입니다.")
         private Long id;
 
-        @NotBlank(message = "완료여부는 필수 입력값 입니다.")
         private String completeYn;
     }
 
@@ -291,10 +294,8 @@ public class ExerciseController {
     @Data
     static class UpdateDeleteYnRequest{
 
-        @NotBlank(message = "운동날짜는 필수값입니다.")
         private LocalDate exerciseDate;        //운동날짜
 
-        @NotBlank(message = "삭제여부는 필수값입니다.")
         private String delYn;               //삭제여부
     }
 
@@ -307,23 +308,18 @@ public class ExerciseController {
     @Data
     static class CopyRequest{
 
-        @NotBlank(message = "시작날짜는 필수값입니다.")
         private LocalDate startDate;        //시작날짜
 
-        @NotBlank(message = "종료날짜는 필수값입니다.")
         private LocalDate endDate;          //종료날짜
 
-        @NotBlank(message = "대상날짜는 필수값입니다.")
         private LocalDate targetDate;       //대상날짜
     }
 
     @Data
     static class MoveRequest{
 
-        @NotBlank(message = "이동할날짜는 필수값입니다.")
         private LocalDate moveDate;        //시작날짜
 
-        @NotBlank(message = "대상날짜는 필수값입니다.")
         private LocalDate targetDate;       //대상날짜
     }
 

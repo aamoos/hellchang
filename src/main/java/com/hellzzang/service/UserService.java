@@ -10,6 +10,7 @@ import com.hellzzang.repository.EmailRepository;
 import com.hellzzang.repository.UserRepository;
 import com.hellzzang.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +21,7 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -37,6 +39,9 @@ public class UserService {
     private final JavaMailSender mailSender;
     private static final String FROM_ADDRESS = "gidwns617@naver.com";
     private final SpringTemplateEngine thymeleafTemplateEngine;
+
+    @Value("${app_url}")
+    private String appUrl;
 
     /**
     * @methodName : signup
@@ -136,6 +141,7 @@ public class UserService {
                 .build();
 
         thymeleafContext.setVariable("checkcode", checkCode);
+        thymeleafContext.setVariable("appUrl", appUrl);
         emailRepository.save(email);
 
         // generate the HTML content from the Thymeleaf template

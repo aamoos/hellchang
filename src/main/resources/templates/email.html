@@ -12,7 +12,8 @@
               <tbody>
               <tr>
                   <td style="background:#ffffff;padding:63px 2px 43px">
-                      <a th:href="@{http://localhost:8080/userLogin}" rel="noreferrer noopener" target="_blank"><img th:src="@{classpath:/static/images/hellzzangLogo-circle.png}" width="116" height="38" border="0" alt="점핏" style="display:block;" loading="lazy"></a>
+<!--                      <a th:href="@{http://localhost:8080/userLogin}" rel="noreferrer noopener" target="_blank"><img th:src="@{classpath:/static/images/hellzzangLogo-circle.png}" width="116" height="38" border="0" alt="점핏" style="display:block;" loading="lazy"></a>-->
+                      <a th:href="@{{appUrl}/userLogin}" rel="noreferrer noopener" target="_blank"><img th:src="@{classpath:/static/images/hellzzangLogo-circle.png}" width="116" height="38" border="0" alt="점핏" style="display:block;" loading="lazy"></a>
                   </td>
               </tr>
               <tr>
@@ -48,7 +49,8 @@
                                       </tr>
                                       <tr>
                                           <td align="center" height="56" style="border-radius:4px;background:#000">
-                                              <a th:href="@{http://localhost:8080/userJoin/{checkcode}(checkcode=${checkcode})}" target="_blank" style="display:block;line-:56px;border:0;font-family:'apple sd gothic', '맑은고딕', 'nanum gothic',sans-serif;color:#5cf636;font-size:16px;letter-spacing:-0.5px;text-decoration:none;font-weight:bold" rel="noreferrer noopener">
+<!--                                              <a th:href="@{http://localhost:8080/userJoin/{checkcode}(checkcode=${checkcode})}" target="_blank" style="display:block;line-:56px;border:0;font-family:'apple sd gothic', '맑은고딕', 'nanum gothic',sans-serif;color:#5cf636;font-size:16px;letter-spacing:-0.5px;text-decoration:none;font-weight:bold" rel="noreferrer noopener">-->
+                                              <a th:href="@{{appUrl}/userJoin/{checkcode}(checkcode=${checkcode})}" target="_blank" style="display:block;line-:56px;border:0;font-family:'apple sd gothic', '맑은고딕', 'nanum gothic',sans-serif;color:#5cf636;font-size:16px;letter-spacing:-0.5px;text-decoration:none;font-weight:bold" rel="noreferrer noopener">
                                                   Hellzzang 회원가입
                                               </a>
                                           </td>
