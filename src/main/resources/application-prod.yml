@@ -8,14 +8,14 @@ spring: #띄어쓰기 없음
     password:
     driver-class-name: org.h2.Driver
 
-#  sql:
-#    init:
-#      mode: always
+  sql:
+    init:
+      mode: always
 
   jpa: #띄어쓰기 2칸
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate: #띄어쓰기 4칸
-      ddl-auto: none #띄어쓰기 6칸
+      ddl-auto: create #띄어쓰기 6칸
     properties: #띄어쓰기 4칸
       hibernate: #띄어쓰기 6칸
         # show_sql: true #띄어쓰기 8칸
@@ -62,3 +62,6 @@ jwt: #이향준 추가
   secret: c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
 
 app_url: http://192.168.0.39:8080
+
+file:
+  upload-path: /home/hellzzang/server/upload
