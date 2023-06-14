@@ -129,7 +129,7 @@ public class UserController {
     @PostMapping("/userChangeInfo")
     @ResponseBody
     public ResponseEntity<?> userChangeInfo(@Valid @RequestBody userInfoChangeDto request){
-        userService.userChangeInfo(request.getId(), request.getAddress(), request.getAddressDetail(), request.getPhone());
+        userService.userChangeInfo(request.getId(), request.getAddress(), request.getAddressDetail(), request.getPhone(), request.getThumbnailIdx());
         return ResponseEntity.ok("200");
     }
 
@@ -176,7 +176,7 @@ public class UserController {
 
         @NotBlank(message = "아이디를 입력하세요.")
         @NotNull
-        @Pattern(regexp = "^([\\w.%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,})$", message = "이메일 형식이 올바르지 않습니다.")
+        @Pattern(regexp = "^(admin)$|^([\\w.%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,})$", message = "이메일 형식이 올바르지 않습니다.")
         private String userid;
     }
 
@@ -242,6 +242,8 @@ public class UserController {
         @NotNull(message = "번호는 필수입력 값입니다.")
         @Pattern(regexp = "^01[01][0-9]{7,8}$", message = "전화번호 형식이 올바르지 않습니다.(-제외하고 입력)")
         private String phone;
+
+        private Long thumbnailIdx;
     }
 
     /**

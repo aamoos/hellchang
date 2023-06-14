@@ -56,6 +56,9 @@ public class User {
 
     private LocalDateTime lastLoginDate; //마지막 접속날짜
 
+    @Column(nullable = true)
+    private Long thumbnailIdx;          //사용자 thumbnail Idx
+
     @JsonIgnore
     @Column(name = "activated")
     private boolean activated;

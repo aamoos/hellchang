@@ -207,18 +207,19 @@ public class UserService {
      * @Description: 유저 정보 변경
      **/
     @Transactional
-    public void userChangeInfo(Long id, String address, String addressDetail, String phone){
+    public void userChangeInfo(Long id, String address, String addressDetail, String phone, Long thumbnailIdx){
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             user.setAddress(address);
             user.setAddressDetail(addressDetail);
             user.setPhone(phone);
+            user.setThumbnailIdx(thumbnailIdx);
             userRepository.save(user);
         } else {
             throw new UserNotFoundException(id);
         }
-    }
+   }
 
     /**
     * @methodName : userCheckPassword
