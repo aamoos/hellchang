@@ -1,6 +1,9 @@
 package com.hellzzang.entity;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -23,7 +26,6 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
 @EntityListeners(AuditingEntityListener.class)
 public class FileInfo {
 
@@ -66,23 +68,22 @@ public class FileInfo {
         this.delYn = delYn;
     }
 
-
     /**
-     * @methodName : updateDelYn
-     * @date : 2023-05-22 오전 10:07
-     * @author : 김재성
-     * @Description: 삭제여부 업데이트
-     **/
+    * @methodName : updateDelYn
+    * @date : 2023-05-22 오전 10:07
+    * @author : 김재성
+    * @Description: 삭제여부 업데이트
+    **/
     public void updateDelYn(String delYn){
         this.delYn = delYn;
     }
 
     /**
-     * @methodName : updateUrl
-     * @date : 2023-05-22 오전 10:07
-     * @author : 김재성
-     * @Description: 썸네일 url 업데이트
-     **/
+    * @methodName : updateUrl
+    * @date : 2023-05-22 오전 10:07
+    * @author : 김재성
+    * @Description: 썸네일 url 업데이트
+    **/
     public void updateUrl(String url){
         this.url = url;
     }

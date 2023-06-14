@@ -1,5 +1,7 @@
 package com.hellzzang.service;
 
+import com.hellzzang.dto.ExerciseDto;
+import com.hellzzang.dto.QExerciseDto;
 import com.hellzzang.entity.Exercise;
 import com.hellzzang.repository.ExerciseRepository;
 import com.querydsl.core.Tuple;
@@ -38,7 +40,7 @@ public class ExerciseService {
 
     private final ExerciseRepository exerciseRepository;
 
-    private EntityManager entityManager;
+    private final JPAQueryFactory jpaQueryFactory;
 
     private final JPAQueryFactory queryFactory;
 
@@ -168,6 +170,26 @@ public class ExerciseService {
         }
 
         return result;
+    }
+
+    /**
+    * @methodName : getCalendarData
+    * @date : 2023-05-31 오후 2:48
+    * @author : 김재성
+    * @Description: 달력 데이터 가져오기
+    **/
+    public List<ExerciseDto> getCalendarData(Long id){
+
+        List<ExerciseDto> content = jpaQueryFactory
+                .select(new QExerciseDto(
+                    exercise.exerciseDate
+                ))
+                .distinct()
+                .from(exercise)
+                .where(exercise.userId.eq(id))
+                .where(exercise.delYn.eq("N"))
+                .fetch();
+        return content;
     }
 
 }
