@@ -108,17 +108,11 @@ public class GymWearService {
         List<GymWearFileDto> content = jpaQueryFactory
                 .select(new QGymWearFileDto(
                         gymWearFile.fileInfo.id
-                        ,gymWearFile.fileInfo.delYn
-                        ,gymWearFile.fileInfo.extension
-                        ,gymWearFile.fileInfo.originFileName
-                        ,gymWearFile.fileInfo.regDate
-                        ,gymWearFile.fileInfo.savedFileName
-                        ,gymWearFile.fileInfo.size
-                        ,gymWearFile.fileInfo.uploadDir
+                        ,gymWearFile.fileInfo
                 ))
                 .from(gymWearFile)
                 .where(gymWearFile.fileInfo.delYn.eq("N"))
-                .where(gymWearFile.gymWearId.eq(id))
+                .where(gymWearFile.gymWear.id.eq(id))
                 .orderBy(gymWearFile.id.desc())
                 .fetch();
 

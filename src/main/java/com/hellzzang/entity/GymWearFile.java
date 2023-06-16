@@ -30,16 +30,18 @@ public class GymWearFile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long gymWearId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "gymWear_id")
+    private GymWear gymWear;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "file_id")
     private FileInfo fileInfo;
 
     @Builder
-    public GymWearFile(Long id, Long gymWearId, FileInfo fileInfo){
+    public GymWearFile(Long id, GymWear gymWear, FileInfo fileInfo){
         this.id = id;
-        this.gymWearId = gymWearId;
+        this.gymWear = gymWear;
         this.fileInfo = fileInfo;
     }
 

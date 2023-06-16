@@ -11,6 +11,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * packageName    : com.hellzzangAdmin.entity
@@ -52,6 +54,17 @@ public class GymWear {
     @LastModifiedDate
     private String modifiedDate;
 
+    @OneToMany(mappedBy = "gymWear", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GymWearFile> gymWearFiles = new ArrayList<>();
+
+    //짐웨어 파일 추가하기
+    public void addGymWearFile(GymWearFile gymWearFile){
+        if (this.gymWearFiles == null) {
+            this.gymWearFiles = new ArrayList<>();
+        }
+        this.gymWearFiles.add(gymWearFile);
+    }
+
     @PrePersist
     public void onPrePersist(){
         this.createdDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -70,7 +83,7 @@ public class GymWear {
     private Long price;
 
     @Builder
-    public GymWear(Long id, String title, String contents, String contentsText, AdminUsers adminUsers, Long thumbnailIdx, String delYn, Long price){
+    public GymWear(Long id, String title, String contents, String contentsText, AdminUsers adminUsers, Long thumbnailIdx, String delYn, Long price, List<GymWearFile> gymWearFiles){
         this.id = id;
         this.title = title;
         this.contents = contents;
@@ -79,6 +92,7 @@ public class GymWear {
         this.thumbnailIdx = thumbnailIdx;
         this.delYn = "N";
         this.price = price;
+        this.gymWearFiles = gymWearFiles;
     }
 
     public GymWear delete(){

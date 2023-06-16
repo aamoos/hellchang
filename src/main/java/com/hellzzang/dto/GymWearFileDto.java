@@ -1,12 +1,13 @@
 package com.hellzzang.dto;
 
+import com.hellzzang.entity.FileInfo;
+import com.hellzzang.entity.GymWear;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
@@ -26,35 +27,21 @@ import java.time.LocalDateTime;
 public class GymWearFileDto {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String contentType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "gymWear_id")
+    private GymWear gymWear;
 
-    private String delYn;
-
-    private String extension;
-
-    private String originFileName;
-
-    private LocalDateTime regDate;
-
-    private String savedFileName;
-
-    private Long size;
-
-    private String uploadDir;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "file_id")
+    private FileInfo fileInfo;
 
     @QueryProjection
-    public GymWearFileDto(Long id, String delYn, String extension, String originFileName, LocalDateTime regDate, String savedFileName, Long size, String uploadDir) {
+    public GymWearFileDto(Long id, FileInfo fileInfo) {
         this.id = id;
-        this.delYn = delYn;
-        this.extension = extension;
-        this.originFileName = originFileName;
-        this.regDate = regDate;
-        this.savedFileName = savedFileName;
-        this.size = size;
-        this.uploadDir = uploadDir;
+        this.fileInfo = fileInfo;
     }
 
 }
