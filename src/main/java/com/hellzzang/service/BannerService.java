@@ -42,21 +42,15 @@ public class BannerService {
 
         if(banner != null){
             content = jpaQueryFactory
-                    .select(new QBannerFileDto(
-                            bannerFile.fileInfo.id
-                            ,bannerFile.fileInfo.delYn
-                            ,bannerFile.fileInfo.extension
-                            ,bannerFile.fileInfo.originFileName
-                            ,bannerFile.fileInfo.regDate
-                            ,bannerFile.fileInfo.savedFileName
-                            ,bannerFile.fileInfo.size
-                            ,bannerFile.fileInfo.uploadDir
-                    ))
-                    .from(bannerFile)
-                    .where(bannerFile.fileInfo.delYn.eq("N"))
-                    .where(bannerFile.bannerId.eq(banner.getId()))
-                    .orderBy(bannerFile.id.desc())
-                    .fetch();
+            .select(new QBannerFileDto(
+                    bannerFile.fileInfo.id
+                    ,bannerFile.fileInfo
+            ))
+            .from(bannerFile)
+            .where(bannerFile.fileInfo.delYn.eq("N"))
+            .where(bannerFile.banner.id.eq(banner.getId()))
+            .orderBy(bannerFile.id.desc())
+            .fetch();
         }
         return content;
     }

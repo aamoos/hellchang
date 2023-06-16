@@ -6,14 +6,15 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 //UserService에서 설정
 @Entity
@@ -66,7 +67,7 @@ public class AdminUsers implements UserDetails {
     @Column(name = "activated")
     private boolean activated;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "admin_user_authority",
             joinColumns = {@JoinColumn(name = "user_index", referencedColumnName = "user_index")},
@@ -95,8 +96,9 @@ public class AdminUsers implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        return authorities;
+        return authorities.stream()
+                .map(adminAuthority -> new SimpleGrantedAuthority(adminAuthority.getAuthorityName()))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -109,4 +111,5 @@ public class AdminUsers implements UserDetails {
         this.delYn = "Y";
         return this;
     }
+
 }

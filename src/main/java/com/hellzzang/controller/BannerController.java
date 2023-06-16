@@ -32,7 +32,6 @@ public class BannerController {
 
     @PostMapping("/list")
     public List<BannerFileDto> list(@RequestBody FindRequestDto findRequestDto, @RequestHeader(name="Authorization") String token) throws Exception {
-        System.out.println("token : " + token);
         return bannerService.findBannerFileList(findRequestDto.bannerPath);
     }
 

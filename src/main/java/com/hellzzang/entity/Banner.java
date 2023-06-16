@@ -11,6 +11,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * packageName    : com.hellzzangAdmin.entity
@@ -45,6 +47,17 @@ public class Banner {
 
     @LastModifiedDate
     private String modifiedDate;
+
+    @OneToMany(mappedBy = "banner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BannerFile> bannerFiles = new ArrayList<>();
+
+    //배너파일 추가
+    public void addBannerFiles(BannerFile bannerFile){
+        if (this.bannerFiles == null) {
+            this.bannerFiles = new ArrayList<>();
+        }
+        this.bannerFiles.add(bannerFile);
+    }
 
     @PrePersist
     public void onPrePersist(){

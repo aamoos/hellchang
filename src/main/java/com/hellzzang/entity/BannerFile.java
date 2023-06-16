@@ -30,17 +30,19 @@ public class BannerFile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long bannerId;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "file_id")
     private FileInfo fileInfo;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "banner_id")
+    private Banner banner;
+
     @Builder
-    public BannerFile(Long id, Long bannerId, FileInfo fileInfo){
+    public BannerFile(Long id,  FileInfo fileInfo, Banner banner){
         this.id = id;
-        this.bannerId = bannerId;
         this.fileInfo = fileInfo;
+        this.banner = banner;
     }
 
 }
