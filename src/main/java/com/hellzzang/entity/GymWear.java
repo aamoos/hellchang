@@ -54,7 +54,7 @@ public class GymWear {
     @LastModifiedDate
     private String modifiedDate;
 
-    @OneToMany(mappedBy = "gymWear", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "gymWear", cascade = CascadeType.ALL)
     private List<GymWearFile> gymWearFiles = new ArrayList<>();
 
     //짐웨어 파일 추가하기
