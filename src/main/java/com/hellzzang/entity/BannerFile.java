@@ -13,7 +13,7 @@ import javax.persistence.*;
  * fileName       : BannerFile
  * author         : 김재성
  * date           : 2023-05-17
- * description    :
+ * description    : 배너 파일 entity
  * ===========================================================
  * DATE              AUTHOR             NOTE
  * -----------------------------------------------------------
@@ -30,7 +30,7 @@ public class BannerFile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "file_id")
     private FileInfo fileInfo;
 
@@ -39,7 +39,7 @@ public class BannerFile {
     private Banner banner;
 
     @Builder
-    public BannerFile(Long id,  FileInfo fileInfo, Banner banner){
+    public BannerFile(Long id, FileInfo fileInfo, Banner banner){
         this.id = id;
         this.fileInfo = fileInfo;
         this.banner = banner;
