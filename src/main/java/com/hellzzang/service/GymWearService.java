@@ -70,7 +70,8 @@ public class GymWearService {
                         gymWear.modifiedDate,
                         gymWear.thumbnailIdx,
                         gymWear.delYn,
-                        gymWear.price
+                        gymWear.price,
+                        gymWear.optionYn
                 ))
                 .from(gymWear)
                 .where(gymWear.delYn.eq("N"))

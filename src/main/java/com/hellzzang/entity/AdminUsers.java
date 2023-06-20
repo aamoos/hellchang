@@ -10,13 +10,22 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-//UserService에서 설정
+/**
+ * @package : com.hellzzangAdmin.entity
+ * @name : AdminUsers.java
+ * @date : 2023-06-17 오전 12:21
+ * @author : 김재성
+ * @Description: 괸리자 entity
+ **/
 @Entity
 @Getter
 @Setter
@@ -102,11 +111,11 @@ public class AdminUsers implements UserDetails {
     }
 
     /**
-    * @methodName : delete
-    * @date : 2023-05-15 오전 10:50
-    * @author : 김재성
-    * @Description: 관리자 삭제
-    **/
+     * @methodName : delete
+     * @date : 2023-05-15 오전 10:50
+     * @author : 김재성
+     * @Description: 관리자 삭제
+     **/
     public AdminUsers delete(){
         this.delYn = "Y";
         return this;

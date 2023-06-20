@@ -19,7 +19,7 @@ import java.util.List;
  * fileName       : GymWear
  * author         : 김재성
  * date           : 2023-05-22
- * description    :
+ * description    : 짐웨어 entity
  * ===========================================================
  * DATE              AUTHOR             NOTE
  * -----------------------------------------------------------
@@ -57,12 +57,25 @@ public class GymWear {
     @OneToMany(mappedBy = "gymWear", cascade = CascadeType.ALL)
     private List<GymWearFile> gymWearFiles = new ArrayList<>();
 
+    private String optionYn;
+
+    @OneToMany(mappedBy = "gymWear", cascade = CascadeType.ALL)
+    private List<GymWearOption> gymWearOptions = new ArrayList<>();
+
     //짐웨어 파일 추가하기
     public void addGymWearFile(GymWearFile gymWearFile){
         if (this.gymWearFiles == null) {
             this.gymWearFiles = new ArrayList<>();
         }
         this.gymWearFiles.add(gymWearFile);
+    }
+
+    //짐웨어 옵션 추가하기
+    public void addGymWearOption(GymWearOption gymWearOption){
+        if (this.gymWearOptions == null) {
+            this.gymWearOptions = new ArrayList<>();
+        }
+        this.gymWearOptions.add(gymWearOption);
     }
 
     @PrePersist
@@ -83,7 +96,7 @@ public class GymWear {
     private Long price;
 
     @Builder
-    public GymWear(Long id, String title, String contents, String contentsText, AdminUsers adminUsers, Long thumbnailIdx, String delYn, Long price, List<GymWearFile> gymWearFiles){
+    public GymWear(Long id, String title, String contents, String contentsText, AdminUsers adminUsers, Long thumbnailIdx, String delYn, Long price, List<GymWearFile> gymWearFiles, String optionYn, List<GymWearOption> gymWearOptions){
         this.id = id;
         this.title = title;
         this.contents = contents;
@@ -93,6 +106,8 @@ public class GymWear {
         this.delYn = "N";
         this.price = price;
         this.gymWearFiles = gymWearFiles;
+        this.optionYn = optionYn;
+        this.gymWearOptions = gymWearOptions;
     }
 
     public GymWear delete(){

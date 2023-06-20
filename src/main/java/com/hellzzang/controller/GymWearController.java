@@ -4,6 +4,7 @@ import com.hellzzang.dto.ExerciseDto;
 import com.hellzzang.dto.GymWearDto;
 import com.hellzzang.dto.GymWearFileDto;
 import com.hellzzang.entity.GymWear;
+import com.hellzzang.entity.GymWearOption;
 import com.hellzzang.service.GymWearService;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import javax.persistence.Lob;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,31 +44,16 @@ public class GymWearController {
     @PostMapping("/list")
     public Page<GymWearDto> find(@RequestBody GymWearListDto gymWearListDto, Pageable pageable, @RequestHeader(name="Authorization") String token) throws Exception {
         pageable = PageRequest.of(gymWearListDto.getPage(), gymWearListDto.getSize());
-
         return gymWearService.selectGymWearList(pageable, gymWearListDto.getTitle());
     }
 
     @PostMapping("/detail")
-    public GymWearDetailDto getGymWearDetail(@RequestBody GymWearDto gymWearDto, @RequestHeader(name="Authorization") String token) throws Exception {
+    public GymWearDetailResponse getGymWearDetail(@RequestBody GymWearDetailRequest gymWearDetailRequest, @RequestHeader(name="Authorization") String token){
+        GymWear gymWear = gymWearService.find(gymWearDetailRequest.getId());
 
-        GymWear gymWear = gymWearService.find(gymWearDto.getId());
-
-        //짐웨어 조회
-        SaveGymWear saveGymWear = SaveGymWear.builder()
-                .id(gymWear.getId())
-                .title(gymWear.getTitle())
-                .contents(gymWear.getContents())
-                .thumbnailIdx(gymWear.getThumbnailIdx())
-                .price(gymWear.getPrice())
+        return GymWearDetailResponse.builder()
+                .entity(gymWear)
                 .build();
-
-        //짐웨어 파일 리스트 조회
-        List<GymWearFileDto> gymWearFile = gymWearService.findGymWearFileList(gymWearDto.getId());
-        GymWearDetailDto gymWearDetailDto = new GymWearDetailDto();
-        gymWearDetailDto.setSaveGymWear(saveGymWear);
-        gymWearDetailDto.setGymWearFileDtoList(gymWearFile);
-
-        return gymWearDetailDto;
     }
 
     @Data
@@ -79,9 +66,47 @@ public class GymWearController {
 
     @Data
     @NoArgsConstructor
-    static class GymWearDetailDto{
-        private SaveGymWear saveGymWear;
-        private List<GymWearFileDto> gymWearFileDtoList;
+    static class GymWearDetailRequest{
+        private Long id;
+    }
+
+    @Data
+    @NoArgsConstructor
+    static class GymWearDetailResponse{
+        private Long id;
+
+        @NotBlank(message = "제목을 입력해주세요.")
+        private String title;
+
+        @Lob
+        @Column(name = "text_area", columnDefinition = "CLOB")
+        @NotBlank(message = "내용을 입력해주세요.")
+        private String contents;
+
+        private Long thumbnailIdx;
+
+        @NotNull(message = "가격은 0원 보다 크게 작성해야 합니다.")
+        @Min(value = 1, message = "가격은 0원 보다 크게 작성해야 합니다.")
+        private Long price;     //가격
+
+        private List<GymWearOption> gymWearOptions = new ArrayList<>();
+
+        @Builder
+        public GymWearDetailResponse(GymWear entity){
+            this.id = entity.getId();
+            this.title = entity.getTitle();
+            this.contents = entity.getContents();
+            this.thumbnailIdx = entity.getThumbnailIdx();
+
+            for (GymWearOption gymWearOption : entity.getGymWearOptions()) {
+                GymWearOption go = GymWearOption.builder()
+                        .id(gymWearOption.getId())
+                        .optionName(gymWearOption.getOptionName())
+                        .build();
+                gymWearOptions.add(go);
+            }
+
+        }
     }
 
     @Data

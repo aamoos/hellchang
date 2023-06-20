@@ -64,10 +64,17 @@ public class ExerciseController {
     }
 
     @PostMapping("/getCalendarData")
-    public List<ExerciseDto> getCalendarData(@RequestHeader(name="Authorization") String token) throws Exception {
+    public Result getCalendarData(@RequestHeader(name="Authorization") String token) throws Exception {
         System.out.println("token : " + token);
+
         //삭제 안된 운동조회
-        return exerciseService.getCalendarData(tokenProvider.getJwtTokenId(token));
+        List<ExerciseDto> collect = exerciseService.getCalendarData(tokenProvider.getJwtTokenId(token));
+
+        //삭제 안된 운동조회
+//        return exerciseService.getCalendarData(tokenProvider.getJwtTokenId(token));
+
+
+        return new Result(collect.size(), collect);
     }
 
     /**
