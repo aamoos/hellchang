@@ -29,6 +29,12 @@ public class ShopService {
 
     private final JPAQueryFactory jpaQueryFactory;
 
+    /**
+    * @methodName : menuList
+    * @date : 2023-06-16 오전 9:07
+    * @author : hj
+    * @Description: 짐웨어&장비 사이드 메뉴 리스트 출력
+    **/
     public List<ShopDto> menuList(){
         QShop parent = QShop.shop;
 

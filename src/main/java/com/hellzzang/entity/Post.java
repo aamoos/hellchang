@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * packageName    : com.hellzzang.entity
@@ -37,6 +38,9 @@ public class Post {
 
     private LocalDateTime postDate;
 
+    @OneToMany(mappedBy = "post")
+    private List<Comment> comments;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_index")
     @JsonIgnore
@@ -46,4 +50,5 @@ public class Post {
     @JoinColumn(name = "board_id")
     @JsonIgnore
     private Board board;
+
 }

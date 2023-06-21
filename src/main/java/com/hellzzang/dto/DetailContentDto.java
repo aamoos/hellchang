@@ -3,46 +3,45 @@ package com.hellzzang.dto;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 /**
  * packageName    : com.hellzzang.dto
- * fileName       : BoardDto
+ * fileName       : DetailContent
  * author         : hj
- * date           : 2023-06-14
+ * date           : 2023-06-15
  * description    :
  * ===========================================================
  * DATE              AUTHOR             NOTE
  * -----------------------------------------------------------
- * 2023-06-14        hj       최초 생성
+ * 2023-06-15        hj       최초 생성
  */
 @Data
-public class BoardDto {
+public class DetailContentDto {
 
-    @NotNull
-    private Long id; //postId
+    private Long postId;
 
-    @NotNull
     private String title;
 
-    @NotNull
     private String content;
 
-    @NotNull
     private int likes;
 
-    @NotNull
+    private LocalDateTime postDate;
+
     private String nickname;
 
-    private Long comments;
+    private Long userId;
+
 
     @QueryProjection
-    public BoardDto(Long id, String title, String content, int likes, String nickname, Long comments){
-        this.id = id;
+    public DetailContentDto(Long postId, String title, String content, int likes, LocalDateTime postDate, String nickname, Long userId){
+        this.postId = postId;
         this.title = title;
         this.content = content;
         this.likes = likes;
+        this.postDate = postDate;
         this.nickname = nickname;
-        this.comments = comments;
+        this.userId = userId;
     }
 }
