@@ -77,9 +77,11 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         User user = userRepository.findBySocialId(id);
 
         String token = tokenProvider.createToken(user);
+        String refreshToken = tokenProvider.createRefreshToken(user);
 
         return UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("token", token)
+                .queryParam("refreshToken", refreshToken)
                 .build().toUriString();
     }
 
