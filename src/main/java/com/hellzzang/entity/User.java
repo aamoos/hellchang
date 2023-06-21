@@ -63,7 +63,9 @@ public class User {
     @Column(name = "activated")
     private boolean activated;
 
-    @ManyToMany
+    private String socialId;
+
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_authority",
             joinColumns = {@JoinColumn(name = "user_index", referencedColumnName = "user_index")},

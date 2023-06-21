@@ -54,8 +54,8 @@ spring: #띄어쓰기 없음
             trust: smtp.naver.com
 
 logging:
-  level:
-    org.hibernate.type.descriptor.sql.BasicBinder: trace
+  level: #띄어쓰기 없음
+    org.hibernate.SQL: debug #띄어쓰기 2칸
 
 jwt: #이향준 추가
   header: Authorization

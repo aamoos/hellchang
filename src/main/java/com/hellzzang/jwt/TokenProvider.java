@@ -98,6 +98,21 @@ public class TokenProvider implements InitializingBean {
                 .compact(); //토큰 생성
     }
 
+    public String generateToken2(Authentication authentication) {
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
+
+        //Access Token 생성
+        return Jwts.builder()
+                .setSubject(authentication.getName())
+                .claim("auth", authorities)
+                .setExpiration(new Date(System.currentTimeMillis()+ 1000 * 60 * 30))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     public String createRefreshToken(User user) {
 
         //현재 시간을 밀리초로 환산
