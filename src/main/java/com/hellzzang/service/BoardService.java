@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.hellzzang.entity.QComment.comment;
@@ -152,5 +153,51 @@ public class BoardService {
         commentInsert.setCommentDate(LocalDateTime.now());
 
         commentRepository.save(commentInsert);
+    }
+
+    /**
+    * @methodName : replyInfo
+    * @date : 2023-06-21 오후 2:04
+    * @author : hj
+    * @Description: 댓글 수정 시 기존 댓글 가져옴
+    **/
+    public Optional<Comment> replyInfo(Long id){
+        return commentRepository.findById(id);
+    }
+    
+    /**
+    * @methodName : replyUpdate
+    * @date : 2023-06-21 오후 5:08
+    * @author : hj
+    * @Description: 댓글 수정
+    **/
+    public void replyUpdate(Long id, String reply){
+        Optional<Comment> comment = commentRepository.findById(id);
+        if(comment.isPresent()){
+            Comment commentSet = comment.get();
+            commentSet.setContent(reply);
+            commentRepository.save(commentSet);
+        }
+    }
+    
+    /**
+    * @methodName : writePost
+    * @date : 2023-06-22 오후 4:55
+    * @author : hj
+    * @Description: 게시글 작성
+    **/
+    public void writePost(Long boardId, Long userId, String title, String content, int likes){
+        Post post = new Post();
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("Post not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        post.setBoard(board);
+        post.setUser(user);
+        post.setTitle(title);
+        post.setContent(content);
+        post.setLikes(likes);
+        post.setPostDate(LocalDateTime.now());
+
+        postRepository.save(post);
     }
 }

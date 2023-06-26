@@ -54,7 +54,21 @@ public class BoardController {
     @ResponseBody
     public void writeReply(@Valid @RequestBody writeReplyDto request){
         boardService.writeReply(request.getPostId(), request.getUserId(), request.getParentId(), request.getComment());
-//        return ResponseEntity.ok((boardService.writeComment(request.getPostId(), request.getUserId(), request.getParentId(), request.getComment())));
+    }
+    @PostMapping("/replyInfo")
+    @ResponseBody
+    public ResponseEntity<?> replyInfo(@RequestBody replyInfoDto request){
+        return ResponseEntity.ok(boardService.replyInfo(request.getId()));
+    }
+    @PostMapping("/updateReply")
+    @ResponseBody
+    public void replyUpdate(@RequestBody replyUpdateDto request){
+        boardService.replyUpdate(request.getId(), request.getComment());
+    }
+    @PostMapping("/writePost")
+    @ResponseBody
+    public void writePost(@RequestBody writePostDto request){
+        boardService.writePost(request.getBoardId(), request.getUserId(), request.getTitle(), request.getContent(), request.getLikes());
     }
 
     @Data
@@ -71,5 +85,28 @@ public class BoardController {
         private String comment;
 
         private LocalDateTime commentDate;
+    }
+
+    @Data
+    static class replyInfoDto{
+        @NotNull
+        private Long id;
+    }
+
+    @Data
+    static class replyUpdateDto{
+        @NotNull
+        private Long id;
+
+        private String comment;
+    }
+
+    @Data
+    static class writePostDto{
+        private Long boardId;
+        private Long userId;
+        private String title;
+        private String content;
+        private int likes;
     }
 }

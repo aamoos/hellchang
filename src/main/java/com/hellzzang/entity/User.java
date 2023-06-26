@@ -23,7 +23,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; //사용자 인덱스
 
-    @Column(name = "userid", length = 50, unique = true)
+    @Column(name = "login_id", length = 50, unique = true)
     private String userid; //로그인 아이디
 
     @Column(name = "password", length = 100)
