@@ -118,7 +118,8 @@ public class BoardService {
 
         List<Tuple> tuples = queryFactory
                 .select(parent,
-                        user.nickname)
+                        user.nickname,
+                        user.id)
                 .from(parent)
                 .where(parent.parentComment.isNull().and(parent.post.id.eq(postId)))
                 .orderBy(parent.id.asc())

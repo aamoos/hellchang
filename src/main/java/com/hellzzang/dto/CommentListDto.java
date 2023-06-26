@@ -32,6 +32,8 @@ public class CommentListDto {
 
     private String nickname;
 
+    private Long userId;
+
     public CommentListDto(final Comment comment) {
         this.commentId = comment.getId();
         this.commentDate = comment.getCommentDate();
@@ -39,5 +41,6 @@ public class CommentListDto {
         this.parent = comment.getParentComment();
         this.children = comment.getChildComments().stream().map(CommentListDto::new).collect(Collectors.toList());
         this.nickname = comment.getUser().getNickname();
+        this.userId = comment.getUser().getId();
     }
 }
