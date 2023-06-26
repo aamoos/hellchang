@@ -35,6 +35,8 @@ public class Post {
 
     private String title;
 
+    @Lob
+    @Column(name = "content", columnDefinition = "CLOB")
     private String content;
 
     private int likes;
