@@ -97,6 +97,7 @@ public class GymWearController {
             this.title = entity.getTitle();
             this.contents = entity.getContents();
             this.thumbnailIdx = entity.getThumbnailIdx();
+            this.price = entity.getPrice();
 
             for (GymWearOption gymWearOption : entity.getGymWearOptions()) {
                 GymWearOption go = GymWearOption.builder()
