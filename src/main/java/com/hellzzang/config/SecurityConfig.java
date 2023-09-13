@@ -18,13 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-/**
-* @package : com.example.jwt.config
-* @name : SecurityConfig.java
-* @date : 2023-04-19 오후 5:17
-* @author : hj
-* @Description: Spring Security에서 사용할 보안 설정을 하는 클래스
-**/
 @EnableWebSecurity //기본적인 Web 보안 활성화
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
@@ -61,15 +54,15 @@ public class SecurityConfig {
     }
 
     @Bean
-    public WebSecurityCustomizer configure(){
+    public WebSecurityCustomizer configure() {
         return (web) ->
-        web
-                .ignoring()
-                .antMatchers(  //아래의 요청들에 대해서는 Spring Security 로직을 수행하지 않아도 접근이 가능(=인증 무시)
-                        "/h2-console/**"
-                        ,"/favicon.ico"
-                        ,"/css/**", "/js/**", "/img/**"
-                );
+                web
+                        .ignoring()
+                        .antMatchers(  //아래의 요청들에 대해서는 Spring Security 로직을 수행하지 않아도 접근이 가능(=인증 무시)
+                                "/h2-console/**"
+                                , "/favicon.ico"
+                                , "/css/**", "/js/**", "/img/**"
+                        );
     }
 
     //WebSecurityConfigurerAdapter는 더이상 사용되지 않아 SecurityFilterChain을 Bean으로 등록하여 사용
@@ -83,33 +76,33 @@ public class SecurityConfig {
                 .accessDeniedHandler(jwtAccessDeniedHandler)
 
                 .and() // 데이터 확인을 위한 h2 console 설정 추가 -> 추가적인 서칭 필요
-                    .headers()
-                    .frameOptions()
-                    .sameOrigin()
+                .headers()
+                .frameOptions()
+                .sameOrigin()
 
                 .and() //Security는 기본적으로 세션을 사용하지만 jwt는 세션을 사용하지 않으므로 STATELESS로 설정
-                    .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
                 .and()
-                    .authorizeRequests()  //요청들에 대한 접근 설정
-                    .antMatchers("/auth/*", "/oauth2/**").permitAll()
-                    .anyRequest().authenticated()  //이외 나머지 요청은 인증이 필요
+                .authorizeRequests()  //요청들에 대한 접근 설정
+                .antMatchers("/auth/**", "/oauth2/**", "/userJoin/**").permitAll()
+                .anyRequest().authenticated()  //이외 나머지 요청은 인증이 필요
                 .and()
-                    .oauth2Login()
-                    .authorizationEndpoint().baseUri("/oauth2/authorize")
-                    .authorizationRequestRepository(cookieOAuth2AuthorizationRequestRepository())
+                .oauth2Login()
+                .authorizationEndpoint().baseUri("/oauth2/authorize")
+                .authorizationRequestRepository(cookieOAuth2AuthorizationRequestRepository())
                 .and()
-                    .redirectionEndpoint()
-                    .baseUri("/login/oauth2/code/**")
+                .redirectionEndpoint()
+                .baseUri("/login/oauth2/code/**")
                 .and()
-                    .userInfoEndpoint().userService(customOAuth2UserService)
+                .userInfoEndpoint().userService(customOAuth2UserService)
                 .and()
-                    .successHandler(oAuth2AuthenticationSuccessHandler)
-                    .failureHandler(oAuth2AuthenticationFailureHandler)
+                .successHandler(oAuth2AuthenticationSuccessHandler)
+                .failureHandler(oAuth2AuthenticationFailureHandler)
                 .and()
-                    // JwtFilter를 addFilterBefore로 등록했던 JwtSecurityConfig 클래스를 적용
-                    .apply(new JwtSecurityConfig(tokenProvider));
+                // JwtFilter를 addFilterBefore로 등록했던 JwtSecurityConfig 클래스를 적용
+                .apply(new JwtSecurityConfig(tokenProvider));
 
 //                .and() // JwtFilter를 addFilterBefore로 등록했던 JwtSecurityConfig 클래스를 적용
 //                    .apply(new JwtSecurityConfig(tokenProvider))

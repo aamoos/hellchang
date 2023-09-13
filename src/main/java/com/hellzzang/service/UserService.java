@@ -84,6 +84,9 @@ public class UserService {
                 .activated(true)
                 .build();
 
+        //동록된 이메일 인증코드 전부삭제
+        emailRepository.deleteByUserid(userDto.getUserid());
+
         return userRepository.save(user);  // save = DB에 insert
     }
 
@@ -145,6 +148,7 @@ public class UserService {
         //회원가입 url
         String joinUrl = appUrl+"/userJoin/"+checkCode;
 
+        thymeleafContext.setVariable("userid", userid);
         thymeleafContext.setVariable("joinUrl", joinUrl);
         emailRepository.save(email);
 

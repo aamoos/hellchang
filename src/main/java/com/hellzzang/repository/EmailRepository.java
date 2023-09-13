@@ -21,4 +21,7 @@ public interface EmailRepository extends JpaRepository<Email, Long> {
     void save(EmailDto emaildto);
 
     Optional<Email> findByCheckcode(String checkcode);
+
+    //이메일에 등록된 id 삭제처리
+    int deleteByUserid(String userid);
 }

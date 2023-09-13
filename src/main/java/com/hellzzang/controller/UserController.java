@@ -1,5 +1,6 @@
 package com.hellzzang.controller;
 
+import com.hellzzang.common.ValidationErrorResponse;
 import com.hellzzang.dto.UserDto;
 import com.hellzzang.entity.User;
 import com.hellzzang.service.UserService;
@@ -15,7 +16,7 @@ import javax.mail.MessagingException;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.io.IOException;
-import java.util.Optional;
+import java.util.*;
 
 /**
 * @package : com.example.jwt.controller
@@ -46,8 +47,15 @@ public class UserController {
     public ResponseEntity<?> signup(@Valid @RequestBody UserDto userDto, BindingResult result) {
         log.info("bindingResult ={}", result);
 
-        if (result.hasErrors()){
-            return ResponseEntity.badRequest().body(result.getAllErrors());
+        if (result.hasErrors()) {
+            Map<String, List<String>> fieldErrors = new HashMap<>();
+            result.getFieldErrors().forEach(fieldError -> {
+                String field = fieldError.getField();
+                String message = fieldError.getDefaultMessage();
+                fieldErrors.computeIfAbsent(field, key -> new ArrayList<>()).add(message);
+            });
+
+            return ResponseEntity.badRequest().body(new ValidationErrorResponse(fieldErrors));
         }
 
         return ResponseEntity.ok(userService.signup(userDto)); //http의 body, header, status를 포함한 데이터 -> 추가 서칭 필요
