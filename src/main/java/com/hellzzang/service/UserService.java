@@ -142,8 +142,10 @@ public class UserService {
                 .checkcode(checkCode)
                 .build();
 
-        thymeleafContext.setVariable("checkcode", checkCode);
-        thymeleafContext.setVariable("appUrl", appUrl);
+        //회원가입 url
+        String joinUrl = appUrl+"/userJoin/"+checkCode;
+
+        thymeleafContext.setVariable("joinUrl", joinUrl);
         emailRepository.save(email);
 
         // generate the HTML content from the Thymeleaf template
