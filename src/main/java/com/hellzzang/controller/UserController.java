@@ -27,7 +27,7 @@ import java.util.*;
 **/
 @Slf4j
 @Controller
-@RequestMapping("/auth")
+
 public class UserController {
     private final UserService userService;
 
@@ -36,85 +36,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    /**
-    * @methodName : signup
-    * @date : 2023-04-19 오후 5:18
-    * @author : hj
-    * @Description: 회원가입 메서드
-    **/
-    @PostMapping("/signup")
-    @ResponseBody
-    public ResponseEntity<?> signup(@Valid @RequestBody UserDto userDto, BindingResult result) {
-        log.info("bindingResult ={}", result);
-
-        if (result.hasErrors()) {
-            Map<String, List<String>> fieldErrors = new HashMap<>();
-            result.getFieldErrors().forEach(fieldError -> {
-                String field = fieldError.getField();
-                String message = fieldError.getDefaultMessage();
-                fieldErrors.computeIfAbsent(field, key -> new ArrayList<>()).add(message);
-            });
-
-            return ResponseEntity.badRequest().body(new ValidationErrorResponse(fieldErrors));
-        }
-
-        return ResponseEntity.ok(userService.signup(userDto)); //http의 body, header, status를 포함한 데이터 -> 추가 서칭 필요
-        //Response header에는 웹서버가 웹브라우저에 응답하는 메시지가 들어있음
-        //Reponse body에는 데이터 값이 들어있음
-    }
-    
-    /**
-    * @methodName : userIdCheck
-    * @date : 2023-05-02 오후 3:23
-    * @author : hj
-    * @Description: userid입력 후 로그인 시 로그인 or 회원가입
-    **/
-    @PostMapping("/userExistenceCheck")
-    @ResponseBody
-    public ResponseEntity<?> userIdCheck(@Valid @RequestBody userIdCheckDto request, BindingResult result){
-        log.info("bindingResult ={}", result);
-
-        if (result.hasErrors()){
-            return ResponseEntity.badRequest().body(result.getAllErrors());
-        }
-        return ResponseEntity.ok(userService.userIdCheck(request.getUserid()));
-    }
-
-    /**
-    * @methodName : sendEmail
-    * @date : 2023-05-02 오후 4:17
-    * @author : hj
-    * @Description: 이메일 전송 api, 로그인 시 해당 유저가 존재하지 않으면 해당 api 호출
-    **/
-    @PostMapping("/sendEmail")
-    @ResponseBody
-    public void sendEmail(@Valid @RequestBody userIdCheckDto request) throws MessagingException, IOException {
-        userService.sendEmail(request.getUserid());
-    }
-
-    /**
-    * @methodName : emailCheck
-    * @date : 2023-05-03 오후 5:22
-    * @author : hj
-    * @Description: 회원가입 시 부여된 랜덤 코드를 통해 유저 id 확인
-    **/
-    @PostMapping("/emailCheck")
-    @ResponseBody
-    public ResponseEntity<String> emailCheck(@Valid @RequestBody mailCheckDto request){
-        return ResponseEntity.ok(userService.emailCheck(request.getCheckcode()));
-    }
-
-    /**
-    * @methodName : nicknameCheck
-    * @date : 2023-05-03 오전 11:20
-    * @author : hj
-    * @Description: 닉네임 중복검사
-    **/
-    @PostMapping("/nicknameCheck")
-    @ResponseBody
-    public ResponseEntity<Boolean> nicknameCheck(@Valid @RequestBody nicknameCheckDto request){
-        return ResponseEntity.ok(userService.nicknameCheck(request.getNickname()));
-    }
 
     /**
      * @methodName : userIndexCheck

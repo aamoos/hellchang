@@ -116,7 +116,6 @@ public class UserService {
     @Transactional
     public void sendEmail(String userid) throws MessagingException, IOException {
 
-        System.out.println("appUrl: " + appUrl);
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 

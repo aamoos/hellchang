@@ -1,27 +1,36 @@
 package com.hellzzang.controller;
 
+import com.hellzzang.common.ValidationErrorResponse;
 import com.hellzzang.dto.LoginDto;
 import com.hellzzang.dto.TokenDto;
+import com.hellzzang.dto.UserDto;
 import com.hellzzang.entity.User;
 import com.hellzzang.jwt.JwtFilter;
 import com.hellzzang.jwt.TokenProvider;
 import com.hellzzang.repository.UserRepository;
+import com.hellzzang.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @package : com.example.jwt.controller
@@ -33,6 +42,7 @@ import java.time.format.DateTimeFormatter;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -44,6 +54,7 @@ public class AuthController {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final UserService userService;
     /**
      * @methodName : authorize
      * @date : 2023-04-19 오후 5:06
@@ -146,6 +157,50 @@ public class AuthController {
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    /**
+     * @methodName : signup
+     * @date : 2023-04-19 오후 5:18
+     * @author : hj
+     * @Description: 회원가입 메서드
+     **/
+    @PostMapping("/signup")
+    @ResponseBody
+    public ResponseEntity<?> signup(@Valid @RequestBody UserDto userDto, BindingResult result) {
+        log.info("bindingResult ={}", result);
+
+        if (result.hasErrors()) {
+            Map<String, List<String>> fieldErrors = new HashMap<>();
+            result.getFieldErrors().forEach(fieldError -> {
+                String field = fieldError.getField();
+                String message = fieldError.getDefaultMessage();
+                fieldErrors.computeIfAbsent(field, key -> new ArrayList<>()).add(message);
+            });
+
+            return ResponseEntity.badRequest().body(new ValidationErrorResponse(fieldErrors));
+        }
+
+        return ResponseEntity.ok(userService.signup(userDto)); //http의 body, header, status를 포함한 데이터 -> 추가 서칭 필요
+        //Response header에는 웹서버가 웹브라우저에 응답하는 메시지가 들어있음
+        //Reponse body에는 데이터 값이 들어있음
+    }
+
+    /**
+     * @methodName : userIdCheck
+     * @date : 2023-05-02 오후 3:23
+     * @author : hj
+     * @Description: userid입력 후 로그인 시 로그인 or 회원가입
+     **/
+    @PostMapping("/userExistenceCheck")
+    @ResponseBody
+    public ResponseEntity<?> userIdCheck(@Valid @RequestBody UserController.userIdCheckDto request, BindingResult result){
+        log.info("bindingResult ={}", result);
+
+        if (result.hasErrors()){
+            return ResponseEntity.badRequest().body(result.getAllErrors());
+        }
+        return ResponseEntity.ok(userService.userIdCheck(request.getUserid()));
     }
 
 }
