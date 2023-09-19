@@ -178,13 +178,18 @@ public class TokenProvider implements InitializingBean {
     * @author : 김재성
     * @Description: jwt token으로 현재 로그인한 사용자 인덱스 가져오기
     **/
-    public Long getJwtTokenId(String token) throws JsonProcessingException {
+    public Long getJwtTokenId(String token){
         String[] check = token.split("\\.");
         Base64.Decoder decoder = Base64.getDecoder();
         String payload = new String(decoder.decode(check[1]));
 
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> returnMap = mapper.readValue(payload, Map.class);
+        Map<String, Object> returnMap = null;
+        try {
+            returnMap = mapper.readValue(payload, Map.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         int id = (int) returnMap.get("id");
 

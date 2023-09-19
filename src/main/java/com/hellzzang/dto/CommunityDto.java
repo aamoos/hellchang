@@ -3,6 +3,7 @@ package com.hellzzang.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hellzzang.entity.Community;
 import com.hellzzang.entity.Exercise;
+import com.hellzzang.entity.User;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,11 +39,14 @@ public class CommunityDto {
     @NotEmpty(message = "내용은 필수입력 값입니다.")
     private String contents;
 
+    private User user;
+
     public Community toEntity(){
         return Community.builder()
                 .id(id)
                 .title(title)
                 .contents(contents)
+                .user(user)
                 .build();
     }
 

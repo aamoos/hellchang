@@ -1,7 +1,9 @@
 package com.hellzzang.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hellzzang.common.ValidationErrorResponse;
 import com.hellzzang.dto.CommunityDto;
+import com.hellzzang.jwt.TokenProvider;
 import com.hellzzang.service.CommunityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +41,10 @@ public class CommunityController {
     private final CommunityService communityService;
 
     @PostMapping("/save")
-    public ResponseEntity<?> save(@Valid CommunityDto communityDto, List<MultipartFile> communityFiles, BindingResult result, HttpServletRequest request){
+    public ResponseEntity<?> save(@Valid CommunityDto communityDto, BindingResult result
+            , @RequestPart(value = "communityFiles", required = false) List<MultipartFile> communityFiles
+            , HttpServletRequest request
+            , @RequestHeader(name="Authorization") String token){
         log.info("bindingResult ={}", result);
 
         if (result.hasErrors()) {
@@ -53,7 +58,7 @@ public class CommunityController {
             return ResponseEntity.badRequest().body(new ValidationErrorResponse(fieldErrors));
         }
 
-        return ResponseEntity.ok(communityService.save(communityDto, communityFiles, request));
+        return ResponseEntity.ok(communityService.save(communityDto, communityFiles, request, token));
     }
 
 

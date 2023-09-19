@@ -69,11 +69,12 @@ public class Community {
     private String delYn; //삭제여부
 
     @Builder
-    public Community(Long id, String title, String contents){
+    public Community(Long id, String title, String contents, User user){
         this.id = id;
         this.title = title;
         this.contents = contents;
         this.delYn = "N";
+        this.user = user;
     }
 
 }
