@@ -44,7 +44,7 @@ public class GymWear {
 
     private String contentsText;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_index")
     private AdminUsers adminUsers;
 
