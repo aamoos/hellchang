@@ -31,6 +31,7 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserService {
     private final UserRepository userRepository;
     private final EmailRepository emailRepository;
@@ -49,7 +50,6 @@ public class UserService {
     * @author : hj
     * @Description: 회원가입 시 호출되는 메서드
     **/
-    @Transactional
     public User signup(UserDto userDto) {  //userId을 통해 이미 가입되어 있는지 확인
         if (userRepository.findOneWithAuthoritiesByUserid(userDto.getUserid()).orElse(null) != null) {
             // .orElse : optional에 들어갈 값이 null일 경우 orElse 안의 내용을 실행
@@ -96,7 +96,7 @@ public class UserService {
     * @author : hj
     * @Description: 로그인 시 userId 체크 후 회원 존재 시 메인 이동, 없으면 회원가입 이동
     **/
-    @Transactional
+    @Transactional(readOnly = true)
     public boolean userIdCheck(String userid){
         if (userRepository.findByUserid(userid) != null){
             System.out.println("유저 존재 ------------------------------------------");
@@ -113,7 +113,6 @@ public class UserService {
     * @author : hj
     * @Description: 가입 요청 이메일 전송
     **/
-    @Transactional
     public void sendEmail(String userid) throws MessagingException, IOException {
 
         MimeMessage message = mailSender.createMimeMessage();
@@ -166,7 +165,7 @@ public class UserService {
      * @author : hj
      * @Description: 회원가입 시 부여된 랜덤 코드를 통해 유저 id 확인
      **/
-    @Transactional
+    @Transactional(readOnly = true)
     public String emailCheck(String checkcode){
         Optional<Email> optionalEmail = emailRepository.findByCheckcode(checkcode);
         if (optionalEmail.isPresent()){
@@ -193,7 +192,7 @@ public class UserService {
     * @author : hj
     * @Description: 유저 닉네임 중복검사
     **/
-    @Transactional
+    @Transactional(readOnly = true)
     public boolean nicknameCheck(String nickname){
         if (userRepository.findByNickname(nickname) != null){
             return true;
@@ -208,7 +207,7 @@ public class UserService {
      * @author : hj
      * @Description: 회원 index 번호 비교하여 회원정보 불러옴
      **/
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<User> userIndexCheck(Long id){
         return userRepository.findById(id);
     }
@@ -219,7 +218,6 @@ public class UserService {
      * @author : hj
      * @Description: 유저 정보 변경
      **/
-    @Transactional
     public void userChangeInfo(Long id, String address, String addressDetail, String phone, Long thumbnailIdx){
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
@@ -240,7 +238,6 @@ public class UserService {
     * @author : hj
     * @Description: 유저의 index에 해당하는 비밀번호를 비교하여 존재하면 비밀번호 변경
     **/
-    @Transactional
     public String userChangePassword(Long id, String oldpassword, String newpassword){
         Optional<User> optionalUser = userRepository.findById(id);
         if(optionalUser.isPresent()){

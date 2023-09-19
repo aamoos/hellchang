@@ -13,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import static com.hellzzang.entity.QGymWear.gymWear;
 import static com.hellzzang.entity.QGymWearFile.gymWearFile;
@@ -31,6 +33,7 @@ import static com.hellzzang.entity.QGymWearFile.gymWearFile;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class GymWearService {
 
     private final GymWearRepository gymWearRepository;

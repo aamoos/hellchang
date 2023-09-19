@@ -36,6 +36,7 @@ import static com.hellzzang.entity.QExercise.exercise;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ExerciseService {
 
     private final ExerciseRepository exerciseRepository;
@@ -50,12 +51,10 @@ public class ExerciseService {
     * @author : 김재성
     * @Description: 운동계획 저장
     **/
-    @Transactional
     public Exercise save(Exercise exercise){
         return exerciseRepository.save(exercise);
     }
 
-    @Transactional
     public void delete(LocalDate exerciseDate){
         exerciseRepository.deleteByExerciseDate(exerciseDate);
     }
@@ -66,7 +65,6 @@ public class ExerciseService {
     * @author : 김재성
     * @Description: 운동계획 완료여부 업데이트 
     **/
-    @Transactional
     public void updateCompleteYn(Long id, String completeYn){
         Optional<Exercise> optionalExercise = exerciseRepository.findById(id);
         if(optionalExercise.isPresent()){
@@ -85,7 +83,6 @@ public class ExerciseService {
     * @author : 김재성
     * @Description: 복사기능
     **/
-    @Transactional
     public void copy(LocalDate startDate, LocalDate endDate, LocalDate targetDate){
         List<Exercise> list = exerciseRepository.findByExerciseDateAndDelYn(targetDate, "N");
         //ex) startDate: 2023-05-03 endDate: 2023-05-06
@@ -110,7 +107,6 @@ public class ExerciseService {
         }
     }
 
-    @Transactional
     public void move(LocalDate moveDate, LocalDate targetDate){
 
         List<Exercise> exercises = exerciseRepository.findByExerciseDateAndDelYn(targetDate, "N");
@@ -128,7 +124,6 @@ public class ExerciseService {
     * @author : 김재성
     * @Description: 운동계획 삭제하기
     **/
-    @Transactional
     public void updateDelYn(LocalDate exerciseDate){
 
         List<Exercise> exercises = exerciseRepository.findByExerciseDateAndDelYn(exerciseDate, "N");

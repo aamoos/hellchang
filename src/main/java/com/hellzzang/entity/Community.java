@@ -1,6 +1,7 @@
 package com.hellzzang.entity;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -41,29 +42,19 @@ public class Community {
     @Column(name = "text_area", columnDefinition = "CLOB")
     private String contents;
 
-    private String contentsText;
-
     @CreatedDate
     private String createdDate;
 
     @LastModifiedDate
     private String modifiedDate;
 
-    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
-    private List<CommunityFile> communityFiles = new ArrayList<>();
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CommunityFile> files = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    //커뮤니티 파일 추가하기
-    public void addCommunityFile(CommunityFile communityFile){
-        if (this.communityFiles == null) {
-            this.communityFiles = new ArrayList<>();
-        }
-        this.communityFiles.add(communityFile);
-    }
-    
     @PrePersist
     public void onPrePersist(){
         this.createdDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -75,8 +66,14 @@ public class Community {
         this.modifiedDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
-    private Long thumbnailIdx;
+    private String delYn; //삭제여부
 
-    private String delYn;
-    
+    @Builder
+    public Community(Long id, String title, String contents){
+        this.id = id;
+        this.title = title;
+        this.contents = contents;
+        this.delYn = "N";
+    }
+
 }
