@@ -51,8 +51,6 @@ public class CommunityService {
     **/
     public Long save(CommunityDto communityDto, List<MultipartFile> communityFiles, HttpServletRequest request, String token){
 
-        Long id = tokenProvider.getJwtTokenId(token);
-
         //작성한 사용자 조회
         User user = userRepository.findById(tokenProvider.getJwtTokenId(token)).orElseThrow(NullPointerException::new);
         communityDto.setUser(user);
