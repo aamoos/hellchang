@@ -26,7 +26,7 @@ import java.util.Optional;
  * fileName       : CommunityService
  * author         : 김재성
  * date           : 2023-09-19
- * description    :
+ * description    : 커뮤니티 controller
  * ===========================================================
  * DATE              AUTHOR             NOTE
  * -----------------------------------------------------------
