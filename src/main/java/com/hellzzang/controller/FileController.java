@@ -74,7 +74,6 @@ public class FileController {
     @ResponseBody
     @GetMapping("/thumbnail/{fileIdx}")
     public ResponseEntity<byte[]> getFile(@PathVariable("fileIdx") Long fileIdx) throws Exception {
-//    public ResponseEntity<Map<String, String>> getFile(@PathVariable("fileIdx") Long fileIdx) throws Exception {
         return fileService.getThumbnail(fileIdx);
     }
 

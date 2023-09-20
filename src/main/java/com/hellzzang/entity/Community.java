@@ -39,7 +39,7 @@ public class Community {
     private String title;
 
     @Lob
-    @Column(name = "text_area", columnDefinition = "CLOB")
+    @Column(columnDefinition = "CLOB")
     private String contents;
 
     @CreatedDate
@@ -55,6 +55,10 @@ public class Community {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private Long thumbnailIdx;
+
+    private String delYn; //삭제여부
+    
     @PrePersist
     public void onPrePersist(){
         this.createdDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -66,8 +70,11 @@ public class Community {
         this.modifiedDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
-    private String delYn; //삭제여부
-
+    //썸네일 idx 업데이트
+    public void updateThumbnailIdx(Long thumbnailIdx){
+        this.thumbnailIdx = thumbnailIdx;
+    }
+    
     @Builder
     public Community(Long id, String title, String contents, User user){
         this.id = id;

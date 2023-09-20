@@ -226,10 +226,7 @@ public class FileService {
     * @author : 김재성
     * @Description: 넘어온 파일 인덱스로 썸네일 보여주기
     **/
-//    public ResponseEntity<Map<String, String>> getThumbnail(Long fileIdx) throws Exception {
     public ResponseEntity<byte[]> getThumbnail(Long fileIdx) throws Exception {
-
-//        ResponseEntity<Map<String, String>> result = null;
         ResponseEntity<byte[]> result = null;
 
         Optional<FileInfo> optionalFile = fileRepository.findById(fileIdx);
@@ -241,17 +238,9 @@ public class FileService {
             String logiPath = fileInfo.getUploadDir();
             String logiNm = fileInfo.getSavedFileName();
 
-            File file = new File(logiPath+"/"+logiNm);
+            java.io.File file = new java.io.File(logiPath+"/"+logiNm);
 
             try {
-//                byte[] imageBytes = Files.readAllBytes(file.toPath());
-//                String encodeImage = Base64Utils.encodeToString(imageBytes);
-//
-//                Map<String, String> response = new HashMap<>();
-//                response.put("data", encodeImage);
-//
-//                result = new ResponseEntity<>(response, HttpStatus.OK);
-
                 HttpHeaders headers=new HttpHeaders();
                 headers.add("Content-Type", Files.probeContentType(file.toPath()));
                 result=new ResponseEntity<>(FileCopyUtils.copyToByteArray(file),headers, HttpStatus.OK );
