@@ -2,6 +2,7 @@ package com.hellzzang.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -28,16 +29,17 @@ public class Email {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; //이메일 인덱스
 
-    private String userid; //로그인 아이디
+    private String userId; //로그인 아이디
 
-    private String checkcode; //랜덤 코드
+    private String checkCode; //랜덤 코드
 
-    private LocalDateTime emailsendtime; //메일 전송시간
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime emailSendTime; //메일 전송시간
 
     @Builder
-    public Email(String userid, String checkcode, LocalDateTime emailsendtime){
-        this.userid = userid;
-        this.checkcode = checkcode;
-        this.emailsendtime = LocalDateTime.now();
+    public Email(String userId, String checkCode){
+        this.userId = userId;
+        this.checkCode = checkCode;
     }
 }

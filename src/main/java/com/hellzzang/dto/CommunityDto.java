@@ -12,6 +12,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,9 +41,9 @@ public class CommunityDto {
     @NotEmpty(message = "내용은 필수입력 값입니다.")
     private String contents;
 
-    private String createdDate;
+    private LocalDateTime createdDate;
 
-    private String modifiedDate;
+    private LocalDateTime modifiedDate;
 
     private Long thumbnailIdx;
 
@@ -60,7 +61,7 @@ public class CommunityDto {
     }
 
     @QueryProjection
-    public CommunityDto(Long id, String title, String contents, String createdDate, String modifiedDate, Long thumbnailIdx, String delYn, User user) {
+    public CommunityDto(Long id, String title, String contents, LocalDateTime createdDate, LocalDateTime modifiedDate, Long thumbnailIdx, String delYn, User user) {
         this.id = id;
         this.title = title;
         this.contents = contents;

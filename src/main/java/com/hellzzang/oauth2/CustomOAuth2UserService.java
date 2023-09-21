@@ -60,16 +60,16 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         );
     }
     private User saveOrUpdate(OAuthAttributes attributes, String registrationId) {
-        User user = userRepository.findByUserid(attributes.getEmail());
+        User user = userRepository.findByuserId(attributes.getEmail());
         if(user !=null){
-            user = userRepository.findByUserid(attributes.getEmail());
+            user = userRepository.findByuserId(attributes.getEmail());
         }
         else {
             user=attributes.toEntity();
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
             //임시비멀번호 설정
-            user.setPassword(passwordEncoder.encode(user.getUserid()));
+            user.changePassword(passwordEncoder.encode(user.getUserId()));
 
             String socialId = "";
 
@@ -83,7 +83,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 socialId = String.valueOf(map.get("sub"));
             }
 
-            user.setSocialId(socialId);
+            user.changeSocialId(socialId);
 
             //저장
             Long id = userRepository.save(user).getId();

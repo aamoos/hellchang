@@ -91,7 +91,7 @@ public class TokenProvider implements InitializingBean {
         //토큰 생성하여 리턴
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(user.getUserid())
+                .setSubject(user.getUserId())
                 .claim(AUTHORITIES_KEY, authorities) //JWT의 body이고 key-value 데이터를 추가함. 여기서는 권한정보
                 .setExpiration(validity)  //만료일 설정
                 .signWith(key, SignatureAlgorithm.HS512) //HS512 알고리즘 적용
@@ -122,7 +122,7 @@ public class TokenProvider implements InitializingBean {
         Date validity = new Date(now + this.refreshTokenValidityInMilliseconds);
 
         return Jwts.builder()
-                .setSubject(user.getUserid())
+                .setSubject(user.getUserId())
                 .setExpiration(validity)  //만료일 설정
                 .signWith(key, SignatureAlgorithm.HS512) //HS512 알고리즘 적용
                 .compact(); //토큰 생성
@@ -173,7 +173,7 @@ public class TokenProvider implements InitializingBean {
     }
 
     /**
-    * @methodName : getJwtTokenUserId
+    * @methodName : getJwtTokenuserId
     * @date : 2023-04-28 오후 5:51
     * @author : 김재성
     * @Description: jwt token으로 현재 로그인한 사용자 인덱스 가져오기

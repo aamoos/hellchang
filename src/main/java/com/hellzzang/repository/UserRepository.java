@@ -18,11 +18,9 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     @EntityGraph(attributePaths = "authorities") //쿼리가 수행될 때 Eager조회로 authorities정보를 같이 가져온다
-    Optional<User> findOneWithAuthoritiesByUserid(String userid);
+    Optional<User> findOneWithAuthoritiesByuserId(String userId);
     //username을 기준으로 user정보를 조회하며 권한 정보를 같이 가져옴
 
-    User findByUserid(String userid);
-    User findByNickname(String nickname);
-
+    User findByuserId(String userId);
     User findBySocialId(String id);
 }

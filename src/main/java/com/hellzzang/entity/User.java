@@ -16,17 +16,16 @@ public class User extends BaseEntity{
 
     @JsonIgnore
     @Id
-    @Column(name = "user_index")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; //사용자 인덱스
 
-    private String userid; //로그인 아이디
+    private String userId; //로그인 아이디
 
     private String password; //비밀번호
 
-    private String username; //이름
+    private String userName; //이름
 
-    private String nickname; //닉네임
+    private String nickName; //닉네임
 
     private String address; //주소
 
@@ -55,23 +54,38 @@ public class User extends BaseEntity{
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_authority",
-            joinColumns = {@JoinColumn(name = "user_index", referencedColumnName = "user_index")},
+            joinColumns = {@JoinColumn(name = "id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
     private Set<Authority> authorities;
 
     @Builder
-    public User(Long id, String userid, String password, String username, String nickname, String address,
-                String addressDetail, String phone, LocalDateTime lastLoginDate, Set<Authority> authorities){
+    public User(Long id, String userId, String password, String userName, String nickName, String address,
+                String addressDetail, String phone, LocalDateTime lastLoginDate, Set<Authority> authorities ,Long thumbnailIdx){
         this.id = id;
-        this.userid = userid;
+        this.userId = userId;
         this.password = password;
-        this.username = username;
-        this.nickname = nickname;
+        this.userName = userName;
+        this.nickName = nickName;
         this.address = address;
         this.addressDetail = addressDetail;
         this.phone = phone;
+        this.dorYn = "N";
+        this.delYn = "N";
+        this.blockYn = "N";
         this.lastLoginDate = lastLoginDate;
         this.authorities = authorities;
+        this.thumbnailIdx = thumbnailIdx;
+        this.activated = true;
+    }
+
+    //비밀번호 변경
+    public void changePassword(String password){
+        this.password = password;
+    }
+
+    //소셜 아이디 설정
+    public void changeSocialId(String socialId){
+        this.socialId = socialId;
     }
 
 }

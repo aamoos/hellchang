@@ -65,7 +65,7 @@ public class CommunityService {
                         ,community.title
                         ,community.contents
                         ,community.createdDate
-                        ,community.modifiedDate
+                        ,community.lastModifiedDate
                         ,community.thumbnailIdx
                         ,community.delYn
                         ,community.user

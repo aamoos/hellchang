@@ -28,23 +28,17 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AdminUsers extends BaseEntity implements UserDetails {
 
-    @JsonIgnore
     @Id
-    @Column(name = "user_index")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; //사용자 인덱스
 
-    @Column(name = "userid", length = 50, unique = true)
-    private String userid; //로그인 아이디
+    private String userId; //로그인 아이디
 
-    @Column(name = "password", length = 100)
     private String password; //비밀번호
 
-    @Column(name = "username", length = 50)
-    private String username; //이름
+    private String userName; //이름
 
-    @Column(name = "nickname")
-    private String nickname;
+    private String nickName;
 
     private String delYn;   //삭제여부
 
@@ -55,7 +49,7 @@ public class AdminUsers extends BaseEntity implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "admin_user_authority",
-            joinColumns = {@JoinColumn(name = "user_index", referencedColumnName = "user_index")},
+            joinColumns = {@JoinColumn(name = "id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
     private Set<AdminAuthority> authorities;
 
@@ -84,6 +78,11 @@ public class AdminUsers extends BaseEntity implements UserDetails {
         return authorities.stream()
                 .map(adminAuthority -> new SimpleGrantedAuthority(adminAuthority.getAuthorityName()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getUsername() {
+        return this.userId;
     }
 
     /**

@@ -4,13 +4,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +23,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@EntityListeners(AuditingEntityListener.class)
-public class Community {
+public class Community extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,12 +35,6 @@ public class Community {
     @Column(name = "text_area", columnDefinition = "CLOB")
     private String contents;
 
-    @CreatedDate
-    private String createdDate;
-
-    @LastModifiedDate
-    private String modifiedDate;
-
     @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommunityFile> files = new ArrayList<>();
 
@@ -55,26 +42,23 @@ public class Community {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @PrePersist
-    public void onPrePersist(){
-        this.createdDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        this.modifiedDate = this.createdDate;
-    }
-
-    @PreUpdate
-    public void onPreUpdate(){
-        this.modifiedDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-    }
+    private Long thumbnailIdx;
 
     private String delYn; //삭제여부
 
+    //썸네일 idx 업데이트
+    public void updateThumbnailIdx(Long thumbnailIdx){
+        this.thumbnailIdx = thumbnailIdx;
+    }
+
     @Builder
-    public Community(Long id, String title, String contents, User user){
+    public Community(Long id, String title, String contents, User user, Long thumbnailIdx){
         this.id = id;
         this.title = title;
         this.contents = contents;
         this.delYn = "N";
         this.user = user;
+        this.thumbnailIdx = thumbnailIdx;
     }
 
 }

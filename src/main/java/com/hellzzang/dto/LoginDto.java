@@ -17,7 +17,7 @@ import javax.validation.constraints.Size;
 public class LoginDto {
 
     @NotBlank(message = "아이디를 입력하세요.")
-    private String userid;
+    private String userId;
 
     @NotNull
     @Size(min = 3, max = 100)

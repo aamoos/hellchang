@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 /**
  * packageName    : com.hellzzangAdmin.dto
@@ -37,9 +38,9 @@ public class GymWearDto {
 
     private String regUserName;
 
-    private String createdDate;
+    private LocalDateTime createdDate;
 
-    private String modifiedDate;
+    private LocalDateTime lastModifiedDate;
 
     private Long thumbnailIdx;
 
@@ -50,14 +51,15 @@ public class GymWearDto {
     private String optionYn;
 
     @QueryProjection
-    public GymWearDto(Long id, String title, String contents, String contentsText, String regUserName, String createdDate, String modifiedDate, Long thumbnailIdx, String delYn, Long price, String optionYn) {
+    public GymWearDto(Long id, String title, String contents, String contentsText, String regUserName, LocalDateTime createdDate, LocalDateTime lastModifiedDate
+            , Long thumbnailIdx, String delYn, Long price, String optionYn) {
         this.id = id;
         this.title = title;
         this.contents = contents;
         this.contentsText = contentsText;
         this.regUserName = regUserName;
         this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
+        this.lastModifiedDate = lastModifiedDate;
         this.thumbnailIdx = thumbnailIdx;
         this.delYn = delYn;
         this.price = price;

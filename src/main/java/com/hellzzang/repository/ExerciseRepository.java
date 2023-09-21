@@ -25,7 +25,7 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
     * @author : 김재성
     * @Description: 운동계획 리스트 조회
     **/
-    List<Exercise> findByUserIdAndExerciseDateAndDelYnOrderByIdAsc(Long userId, LocalDate exerciseDate, String delYn);
+    List<Exercise> findByuserIdAndExerciseDateAndDelYnOrderByIdAsc(Long userId, LocalDate exerciseDate, String delYn);
 
     /**
     * @methodName : findByExerciseDate

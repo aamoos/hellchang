@@ -77,7 +77,8 @@ public class GymWear extends BaseEntity {
     private Long price;
 
     @Builder
-    public GymWear(Long id, String title, String contents, String contentsText, AdminUsers adminUsers, Long thumbnailIdx, String delYn, Long price, List<GymWearFile> gymWearFiles, String optionYn, List<GymWearOption> gymWearOptions){
+    public GymWear(Long id, String title, String contents, String contentsText, AdminUsers adminUsers, Long thumbnailIdx,
+                   Long price, List<GymWearFile> gymWearFiles, String optionYn, List<GymWearOption> gymWearOptions){
         this.id = id;
         this.title = title;
         this.contents = contents;

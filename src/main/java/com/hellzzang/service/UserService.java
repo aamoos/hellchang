@@ -51,7 +51,7 @@ public class UserService {
     * @Description: 회원가입 시 호출되는 메서드
     **/
     public User signup(UserDto userDto) {  //userId을 통해 이미 가입되어 있는지 확인
-        if (userRepository.findOneWithAuthoritiesByUserid(userDto.getUserid()).orElse(null) != null) {
+        if (userRepository.findOneWithAuthoritiesByuserId(userDto.getUserId()).orElse(null) != null) {
             // .orElse : optional에 들어갈 값이 null일 경우 orElse 안의 내용을 실행
             // Optional이란? 자바에서 Null 참조시 NullPointerException을 방지해주는 클래스
             throw new RuntimeException("이미 가입되어 있는 유저입니다.");
@@ -64,47 +64,22 @@ public class UserService {
 
         Authority authority = new Authority("ROLE_USER");
 
-//        Authority authority = Authority.builder()
-//                .authorityName("ROLE_USER")  //권한을 USER 설정
-//                .build();
-
         User user = User.builder() //유저 정보 빌드
-                .userid(userDto.getUserid())
+                .userId(userDto.getUserId())
                 .password(passwordEncoder.encode(userDto.getPassword()))
-                .username(userDto.getUsername())  //이름
-                .nickname(userDto.getNickname())
+                .userName(userDto.getUserName())  //이름
+                .nickName(userDto.getNickName())
                 .address(userDto.getAddress())
                 .addressDetail(userDto.getAddressDetail())
                 .phone(userDto.getPhone())
-                .dorYn("N")
-                .delYn("N")
-                .blockYn("N")
                 .lastLoginDate(currentDate)
                 .authorities(Collections.singleton(authority))
-                .activated(true)
                 .build();
 
         //동록된 이메일 인증코드 전부삭제
-        emailRepository.deleteByUserid(userDto.getUserid());
+        emailRepository.deleteByuserId(userDto.getUserId());
 
         return userRepository.save(user);  // save = DB에 insert
-    }
-
-    /**
-    * @methodName : userIdCheck
-    * @date : 2023-05-02 오후 3:24
-    * @author : hj
-    * @Description: 로그인 시 userId 체크 후 회원 존재 시 메인 이동, 없으면 회원가입 이동
-    **/
-    @Transactional(readOnly = true)
-    public boolean userIdCheck(String userid){
-        if (userRepository.findByUserid(userid) != null){
-            System.out.println("유저 존재 ------------------------------------------");
-            return true;
-        } else {
-            System.out.println("유저 없음 -----------------------------------------");
-            return false;
-        }
     }
 
     /**
@@ -113,12 +88,12 @@ public class UserService {
     * @author : hj
     * @Description: 가입 요청 이메일 전송
     **/
-    public void sendEmail(String userid) throws MessagingException, IOException {
+    public void sendEmail(String userId) throws MessagingException, IOException {
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-        helper.setTo(userid);
+        helper.setTo(userId);
         helper.setFrom(FROM_ADDRESS);
         helper.setSubject("<Hellzzang> 회원가입을 위해 이메일 인증을 진행해주세요.");
 
@@ -139,14 +114,14 @@ public class UserService {
         String checkCode = code.toString();
 
         Email email = Email.builder()
-                .userid(userid)
-                .checkcode(checkCode)
+                .userId(userId)
+                .checkCode(checkCode)
                 .build();
 
         //회원가입 url
         String joinUrl = appUrl+"/userJoin/"+checkCode;
 
-        thymeleafContext.setVariable("userid", userid);
+        thymeleafContext.setVariable("userId", userId);
         thymeleafContext.setVariable("joinUrl", joinUrl);
         emailRepository.save(email);
 
@@ -166,119 +141,24 @@ public class UserService {
      * @Description: 회원가입 시 부여된 랜덤 코드를 통해 유저 id 확인
      **/
     @Transactional(readOnly = true)
-    public String emailCheck(String checkcode){
-        Optional<Email> optionalEmail = emailRepository.findByCheckcode(checkcode);
+    public String emailCheck(String checkCode){
+        Optional<Email> optionalEmail = emailRepository.findBycheckCode(checkCode);
         if (optionalEmail.isPresent()){
             Email email = optionalEmail.get();
-            String userid = email.getUserid();
+            String userId = email.getUserId();
             System.out.println(" 코드에 대한 이메일 테이블에서 아이디 존재 ----------------");
-            if (userRepository.findByUserid(userid) != null){
+            if (userRepository.findByuserId(userId) != null){
                 System.out.println(" 코드에 대한 유저 테이블에서 아이디 존재 ------------------");
                 return null;
             }
             else{
                 System.out.println(" 코드에 대한 유저 테이블에서 아이디 존재하지 않음 ------------------");
-                return userid;
+                return userId;
             }
         } else {
             System.out.println("코드에 대한 아이디 존재하지 않음 -------------------");
             return null;
         }
-    }
-
-    /**
-    * @methodName : nicknameCheck
-    * @date : 2023-05-03 오전 11:21
-    * @author : hj
-    * @Description: 유저 닉네임 중복검사
-    **/
-    @Transactional(readOnly = true)
-    public boolean nicknameCheck(String nickname){
-        if (userRepository.findByNickname(nickname) != null){
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * @methodName : userIndexCheck
-     * @date : 2023-05-09 오후 4:02
-     * @author : hj
-     * @Description: 회원 index 번호 비교하여 회원정보 불러옴
-     **/
-    @Transactional(readOnly = true)
-    public Optional<User> userIndexCheck(Long id){
-        return userRepository.findById(id);
-    }
-
-    /**
-     * @methodName : userChangeInfo
-     * @date : 2023-05-09 오후 5:51
-     * @author : hj
-     * @Description: 유저 정보 변경
-     **/
-    public void userChangeInfo(Long id, String address, String addressDetail, String phone, Long thumbnailIdx){
-        Optional<User> optionalUser = userRepository.findById(id);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            user.setAddress(address);
-            user.setAddressDetail(addressDetail);
-            user.setPhone(phone);
-            user.setThumbnailIdx(thumbnailIdx);
-            userRepository.save(user);
-        } else {
-            throw new UserNotFoundException(id);
-        }
-   }
-
-    /**
-    * @methodName : userCheckPassword
-    * @date : 2023-05-11 오전 10:17
-    * @author : hj
-    * @Description: 유저의 index에 해당하는 비밀번호를 비교하여 존재하면 비밀번호 변경
-    **/
-    public String userChangePassword(Long id, String oldpassword, String newpassword){
-        Optional<User> optionalUser = userRepository.findById(id);
-        if(optionalUser.isPresent()){
-            if(passwordEncoder.matches(oldpassword, optionalUser.get().getPassword())){
-                if(!passwordEncoder.matches(newpassword, optionalUser.get().getPassword())){
-                    User user = optionalUser.get();
-                    user.setPassword(passwordEncoder.encode(newpassword));
-                    userRepository.save(user);
-                    return "t";
-                }else{
-                    return "기존 비밀번호와 변경할 비밀번호가 동일합니다.";
-                }
-            }else{
-                return "기존 비밀번호가 올바르지 않습니다.";
-            }
-        } else{
-            return "회원이 존재하지 않습니다.";
-        }
-    }
-
-
-    /**
-    * @methodName : getMyUserWithAuthorities
-    * @date : 2023-04-20 오후 1:02
-    * @author : hj
-    * @Description: SecurityUtil의 getCurrentUserId 메소드가 리턴하는 userId 유저 권한 및 권한 정보 리턴
-    **/
-    @Transactional(readOnly = true)
-    public Optional<User> getMyUserWithAuthorities() {
-        return SecurityUtil.getCurrentUserId().flatMap(userRepository::findOneWithAuthoritiesByUserid);
-    }
-
-    /**
-    * @methodName : getUserWithAuthorities
-    * @date : 2023-04-20 오후 1:02
-    * @author : hj
-    * @Description: userId을 통해 해당 유저의 정보 및 권한 정보 리턴
-    **/
-    @Transactional(readOnly = true)
-    public Optional<User> getUserWithAuthorities(String userId) {
-        return userRepository.findOneWithAuthoritiesByUserid(userId);
     }
 
 }

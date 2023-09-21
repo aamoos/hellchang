@@ -20,8 +20,8 @@ import java.util.Optional;
 public interface EmailRepository extends JpaRepository<Email, Long> {
     void save(EmailDto emaildto);
 
-    Optional<Email> findByCheckcode(String checkcode);
+    Optional<Email> findBycheckCode(String checkCode);
 
     //이메일에 등록된 id 삭제처리
-    int deleteByUserid(String userid);
+    int deleteByuserId(String userId);
 }

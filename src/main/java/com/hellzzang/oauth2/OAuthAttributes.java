@@ -93,13 +93,12 @@ public class OAuthAttributes {
 
     public User toEntity() {
         Set<Authority> authorities = new HashSet<>();
-        Authority authority = new Authority();
-        authority.setAuthorityName("ROLE_USER");
+        Authority authority = new Authority("ROLE_USER");
         authorities.add(authority);
 
         return User.builder()
-                .username(name)
-                .userid(email)
+                .userName(name)
+                .userId(email)
                 .authorities(authorities)
                 .build();
     }
