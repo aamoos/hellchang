@@ -20,8 +20,8 @@ import javax.persistence.*;
  */
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GymWearOption {
 
     @Id

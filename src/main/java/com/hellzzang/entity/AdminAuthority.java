@@ -9,10 +9,7 @@ import javax.persistence.Id;
 //UserService에서 설정
 @Entity
 @Getter
-@Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AdminAuthority {
 
     @Id

@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -27,10 +26,9 @@ import java.util.List;
  */
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@EntityListeners(AuditingEntityListener.class)
-public class GymWear {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class GymWear extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,12 +45,6 @@ public class GymWear {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_index")
     private AdminUsers adminUsers;
-
-    @CreatedDate
-    private String createdDate;
-
-    @LastModifiedDate
-    private String modifiedDate;
 
     @OneToMany(mappedBy = "gymWear", cascade = CascadeType.ALL)
     private List<GymWearFile> gymWearFiles = new ArrayList<>();
@@ -76,17 +68,6 @@ public class GymWear {
             this.gymWearOptions = new ArrayList<>();
         }
         this.gymWearOptions.add(gymWearOption);
-    }
-
-    @PrePersist
-    public void onPrePersist(){
-        this.createdDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        this.modifiedDate = this.createdDate;
-    }
-
-    @PreUpdate
-    public void onPreUpdate(){
-        this.modifiedDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
     private Long thumbnailIdx;

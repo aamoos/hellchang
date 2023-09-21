@@ -11,13 +11,16 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "authority")
 @Getter
-@Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Authority {
 
     @Id
     @Column(name = "authority_name", length = 50)
     private String authorityName;
+
+    //권한 설정
+
+    public Authority(String authorityName) {
+        this.authorityName = authorityName;
+    }
 }

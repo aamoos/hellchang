@@ -4,13 +4,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,10 +21,9 @@ import java.util.List;
  */
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@EntityListeners(AuditingEntityListener.class)
-public class Banner {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Banner extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,12 +34,6 @@ public class Banner {
     private String delYn;
 
     private Long fileTotal;
-
-    @CreatedDate
-    private String createdDate;
-
-    @LastModifiedDate
-    private String modifiedDate;
 
     @OneToMany(mappedBy = "banner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BannerFile> bannerFiles = new ArrayList<>();
@@ -59,29 +46,17 @@ public class Banner {
         this.bannerFiles.add(bannerFile);
     }
 
-    @PrePersist
-    public void onPrePersist(){
-        this.createdDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        this.modifiedDate = this.createdDate;
-    }
-
-    @PreUpdate
-    public void onPreUpdate(){
-        this.modifiedDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-    }
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_index")
     private AdminUsers adminUsers;
 
     @Builder
-    public Banner(Long id, String bannerPath, Long fileTotal, AdminUsers adminUsers, String createdDate){
+    public Banner(Long id, String bannerPath, Long fileTotal, AdminUsers adminUsers){
         this.id = id;
         this.bannerPath = bannerPath;
         this.delYn = "N";
         this.fileTotal = fileTotal;
         this.adminUsers = adminUsers;
-        this.createdDate = createdDate;
     }
 
     public Banner delete(){

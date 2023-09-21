@@ -62,9 +62,11 @@ public class UserService {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); //저장될 패턴
         currentDate = LocalDateTime.parse(blockDateFormat, dateFormatter); //String 데이터를 LocalDateTime 형태로 파싱
 
-        Authority authority = Authority.builder()
-                .authorityName("ROLE_USER")  //권한을 USER 설정
-                .build();
+        Authority authority = new Authority("ROLE_USER");
+
+//        Authority authority = Authority.builder()
+//                .authorityName("ROLE_USER")  //권한을 USER 설정
+//                .build();
 
         User user = User.builder() //유저 정보 빌드
                 .userid(userDto.getUserid())
@@ -76,9 +78,7 @@ public class UserService {
                 .phone(userDto.getPhone())
                 .dorYn("N")
                 .delYn("N")
-                .joinDate(currentDate)
                 .blockYn("N")
-                .blockDate(currentDate)
                 .lastLoginDate(currentDate)
                 .authorities(Collections.singleton(authority))
                 .activated(true)

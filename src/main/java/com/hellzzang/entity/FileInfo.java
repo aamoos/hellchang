@@ -20,10 +20,8 @@ import java.time.LocalDateTime;
 
 @Table(name = "file")
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
-@EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FileInfo {
 
     @Id
@@ -43,9 +41,6 @@ public class FileInfo {
     private Long size;                  //파일 사이즈
 
     private String contentType;         //ContentType
-
-    @CreatedDate
-    private LocalDateTime regDate;     //등록 날짜
 
     private String delYn;               //삭제여부
 

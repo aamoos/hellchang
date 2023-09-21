@@ -21,9 +21,8 @@ import javax.persistence.*;
  */
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BannerFile {
 
     @Id

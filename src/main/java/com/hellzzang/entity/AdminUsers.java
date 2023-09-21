@@ -1,20 +1,17 @@
 package com.hellzzang.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,12 +25,8 @@ import java.util.stream.Collectors;
  **/
 @Entity
 @Getter
-@Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
-public class AdminUsers implements UserDetails {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class AdminUsers extends BaseEntity implements UserDetails {
 
     @JsonIgnore
     @Id
@@ -52,23 +45,6 @@ public class AdminUsers implements UserDetails {
 
     @Column(name = "nickname")
     private String nickname;
-
-    @CreatedDate
-    private String createdDate;
-
-    @LastModifiedDate
-    private String modifiedDate;
-
-    @PrePersist
-    public void onPrePersist(){
-        this.createdDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        this.modifiedDate = this.createdDate;
-    }
-
-    @PreUpdate
-    public void onPreUpdate(){
-        this.modifiedDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-    }
 
     private String delYn;   //삭제여부
 
