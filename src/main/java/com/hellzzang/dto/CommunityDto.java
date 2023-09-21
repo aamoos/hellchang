@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hellzzang.entity.Community;
 import com.hellzzang.entity.Exercise;
 import com.hellzzang.entity.User;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,6 +40,14 @@ public class CommunityDto {
     @NotEmpty(message = "내용은 필수입력 값입니다.")
     private String contents;
 
+    private String createdDate;
+
+    private String modifiedDate;
+
+    private Long thumbnailIdx;
+
+    private String delYn;
+
     private User user;
 
     public Community toEntity(){
@@ -48,6 +57,18 @@ public class CommunityDto {
                 .contents(contents)
                 .user(user)
                 .build();
+    }
+
+    @QueryProjection
+    public CommunityDto(Long id, String title, String contents, String createdDate, String modifiedDate, Long thumbnailIdx, String delYn, User user) {
+        this.id = id;
+        this.title = title;
+        this.contents = contents;
+        this.createdDate = createdDate;
+        this.modifiedDate = modifiedDate;
+        this.thumbnailIdx = thumbnailIdx;
+        this.delYn = delYn;
+        this.user = user;
     }
 
 }

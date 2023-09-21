@@ -3,10 +3,16 @@ package com.hellzzang.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hellzzang.common.ValidationErrorResponse;
 import com.hellzzang.dto.CommunityDto;
+import com.hellzzang.dto.GymWearDto;
 import com.hellzzang.jwt.TokenProvider;
 import com.hellzzang.service.CommunityService;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +45,20 @@ import java.util.Map;
 public class CommunityController {
 
     private final CommunityService communityService;
+
+    @PostMapping("/list")
+    public Page<CommunityDto> find(@RequestBody CommunityListDto communityListDto, Pageable pageable, @RequestHeader(name="Authorization") String token) throws Exception {
+        pageable = PageRequest.of(communityListDto.getPage(), communityListDto.getSize());
+        return communityService.selectCommunityList(pageable, communityListDto.getTitle());
+    }
+
+    @Data
+    @NoArgsConstructor
+    static class CommunityListDto{
+        private String title;
+        private int page;
+        private int size;
+    }
 
     @PostMapping("/save")
     public ResponseEntity<?> save(@Valid CommunityDto communityDto, BindingResult result

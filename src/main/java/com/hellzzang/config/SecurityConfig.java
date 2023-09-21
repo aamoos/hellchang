@@ -86,7 +86,7 @@ public class SecurityConfig {
 
                 .and()
                 .authorizeRequests()  //요청들에 대한 접근 설정
-                .antMatchers("/auth/**", "/oauth2/**", "/userJoin/**").permitAll()
+                .antMatchers("/auth/**", "/oauth2/**", "/userJoin/**", "/thumbnail/**").permitAll()
                 .anyRequest().authenticated()  //이외 나머지 요청은 인증이 필요
                 .and()
                 .oauth2Login()
