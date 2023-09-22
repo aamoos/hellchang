@@ -1,12 +1,9 @@
 package com.hellzzang.oauth2;
 
-import com.hellzzang.entity.Authority;
 import com.hellzzang.entity.User;
 import lombok.Getter;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 @Getter
 public class OAuthAttributes {
@@ -92,14 +89,9 @@ public class OAuthAttributes {
     }
 
     public User toEntity() {
-        Set<Authority> authorities = new HashSet<>();
-        Authority authority = new Authority("ROLE_USER");
-        authorities.add(authority);
-
         return User.builder()
                 .userName(name)
                 .userId(email)
-                .authorities(authorities)
                 .build();
     }
 }

@@ -13,6 +13,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,13 +47,6 @@ public class AdminUsers extends BaseEntity implements UserDetails {
     @Column(name = "activated")
     private boolean activated;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "admin_user_authority",
-            joinColumns = {@JoinColumn(name = "id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
-    private Set<AdminAuthority> authorities;
-
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -75,9 +69,9 @@ public class AdminUsers extends BaseEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities.stream()
-                .map(adminAuthority -> new SimpleGrantedAuthority(adminAuthority.getAuthorityName()))
-                .collect(Collectors.toList());
+        Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        return authorities;
     }
 
     @Override
@@ -95,5 +89,4 @@ public class AdminUsers extends BaseEntity implements UserDetails {
         this.delYn = "Y";
         return this;
     }
-
 }

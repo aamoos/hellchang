@@ -2,13 +2,10 @@ package com.hellzzang.service;
 
 
 import com.hellzzang.dto.UserDto;
-import com.hellzzang.entity.Authority;
 import com.hellzzang.entity.Email;
 import com.hellzzang.entity.User;
-import com.hellzzang.exception.UserNotFoundException;
 import com.hellzzang.repository.EmailRepository;
 import com.hellzzang.repository.UserRepository;
-import com.hellzzang.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -21,11 +18,7 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import javax.validation.Valid;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Random;
 
@@ -57,13 +50,6 @@ public class UserService {
             throw new RuntimeException("이미 가입되어 있는 유저입니다.");
         }
 
-        LocalDateTime currentDate = LocalDateTime.now();
-        String blockDateFormat = currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); //저장될 패턴
-        currentDate = LocalDateTime.parse(blockDateFormat, dateFormatter); //String 데이터를 LocalDateTime 형태로 파싱
-
-        Authority authority = new Authority("ROLE_USER");
-
         User user = User.builder() //유저 정보 빌드
                 .userId(userDto.getUserId())
                 .password(passwordEncoder.encode(userDto.getPassword()))
@@ -72,8 +58,6 @@ public class UserService {
                 .address(userDto.getAddress())
                 .addressDetail(userDto.getAddressDetail())
                 .phone(userDto.getPhone())
-                .lastLoginDate(currentDate)
-                .authorities(Collections.singleton(authority))
                 .build();
 
         //동록된 이메일 인증코드 전부삭제

@@ -49,6 +49,9 @@ public class UserDto {
     @Pattern(regexp = "^01[01][0-9]{7,8}$", message = "- 제외하여 입력해야 합니다.")
     private String phone;
 
+    //권한
+    private String authority;
+
     public User toEntity(){
         return User.builder()
                 .userId(userId)

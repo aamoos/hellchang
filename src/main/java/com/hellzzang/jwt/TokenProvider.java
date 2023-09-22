@@ -2,7 +2,6 @@ package com.hellzzang.jwt;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hellzzang.entity.Authority;
 import com.hellzzang.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -76,7 +75,7 @@ public class TokenProvider implements InitializingBean {
 //                .collect(Collectors.joining(","));
 
         //권한 가져오기
-        String authorities = convertAuthoritiesToString(user.getAuthorities());
+        String authorities = user.getAuthority();
 
         //현재 시간을 밀리초로 환산
         long now = (new Date()).getTime();
@@ -217,20 +216,5 @@ public class TokenProvider implements InitializingBean {
             logger.info("JWT 토큰이 잘못되었습니다.");
         }
         return false;
-    }
-
-    public static String convertAuthoritiesToString(Set<Authority> authorities) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        for (Authority authority : authorities) {
-            stringBuilder.append(authority.getAuthorityName()).append(", ");
-        }
-
-        // Remove the trailing comma and space
-        if (stringBuilder.length() > 2) {
-            stringBuilder.setLength(stringBuilder.length() - 2);
-        }
-
-        return stringBuilder.toString();
     }
 }

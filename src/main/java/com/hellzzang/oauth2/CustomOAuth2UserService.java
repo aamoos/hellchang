@@ -11,7 +11,6 @@ package com.hellzzang.oauth2;
  * -----------------------------------------------------------
  * 2023-06-21        김재성       최초 생성
  */
-import com.hellzzang.entity.Authority;
 import com.hellzzang.entity.User;
 import com.hellzzang.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +64,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             user = userRepository.findByuserId(attributes.getEmail());
         }
         else {
-            user=attributes.toEntity();
+            user = attributes.toEntity();
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
             //임시비멀번호 설정
@@ -83,11 +82,12 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 socialId = String.valueOf(map.get("sub"));
             }
 
+            //소셜 id 등록
             user.changeSocialId(socialId);
 
             //저장
-            Long id = userRepository.save(user).getId();
-            user = userRepository.findById(id).get();
+            userRepository.save(user).getId();
+//            user = userRepository.findById(id).get();
         }
 
         return user;

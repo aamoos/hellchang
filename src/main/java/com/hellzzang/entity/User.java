@@ -2,9 +2,12 @@ package com.hellzzang.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 //UserService에서 설정
@@ -12,7 +15,7 @@ import java.util.Set;
 @Table(name = "users")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends BaseEntity{
+public class User{
 
     @JsonIgnore
     @Id
@@ -41,6 +44,7 @@ public class User extends BaseEntity{
 
     private LocalDateTime blockDate; //정지날짜
 
+    @LastModifiedDate
     private LocalDateTime lastLoginDate; //마지막 접속날짜
 
     private Long thumbnailIdx;          //사용자 thumbnail Idx
@@ -51,16 +55,12 @@ public class User extends BaseEntity{
 
     private String socialId;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_authority",
-            joinColumns = {@JoinColumn(name = "id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
-    private Set<Authority> authorities;
+    //권한 단일로 변경
+    private String authority;
 
     @Builder
     public User(Long id, String userId, String password, String userName, String nickName, String address,
-                String addressDetail, String phone, LocalDateTime lastLoginDate, Set<Authority> authorities ,Long thumbnailIdx){
+                String addressDetail, String phone, LocalDateTime lastLoginDate,Long thumbnailIdx){
         this.id = id;
         this.userId = userId;
         this.password = password;
@@ -73,7 +73,7 @@ public class User extends BaseEntity{
         this.delYn = "N";
         this.blockYn = "N";
         this.lastLoginDate = lastLoginDate;
-        this.authorities = authorities;
+        this.authority = "ROLE_USER";
         this.thumbnailIdx = thumbnailIdx;
         this.activated = true;
     }
@@ -87,5 +87,4 @@ public class User extends BaseEntity{
     public void changeSocialId(String socialId){
         this.socialId = socialId;
     }
-
 }
