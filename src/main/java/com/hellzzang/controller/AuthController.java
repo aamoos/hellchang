@@ -13,6 +13,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,13 +27,13 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @package : com.example.jwt.controller
@@ -55,7 +56,6 @@ public class AuthController {
     private String secret;
 
     private final PasswordEncoder passwordEncoder;
-
     private final UserService userService;
     /**
      * @methodName : authorize
@@ -93,29 +93,33 @@ public class AuthController {
         lastLoginDate = LocalDateTime.parse(lastLoginDateFormat, dateFormatter); //String 데이터를 LocalDateTime 형태로 파싱
 
         // 사용자 정보 조회
-        User user = userRepository.findByuserId(loginDto.getUserId());
+        Optional<User> optionalUser = userRepository.findByUserId(loginDto.getUserId());
 
-        //로그인한 사용자가 맞는지 체크
-        if(user != null && passwordEncoder.matches(loginDto.getPassword(), user.getPassword())){
-            //현재 계정이 block되어 있는지 확인
-            if(user.getBlockYn().equals("N")) {
-                //유저정보를 통해 jwt토큰 생성
-                String jwt = tokenProvider.createToken(user);
-                String refreshJwt = tokenProvider.createRefreshToken(user);
+        if(optionalUser.isPresent()){
+            User user = optionalUser.get();
+            //로그인한 사용자가 맞는지 체크
+            if(passwordEncoder.matches(loginDto.getPassword(), user.getPassword())){
+                //현재 계정이 block되어 있는지 확인
+                if(user.getBlockYn().equals("N")) {
+                    //유저정보를 통해 jwt토큰 생성
+                    String jwt = tokenProvider.createToken(user);
+                    String refreshJwt = tokenProvider.createRefreshToken(user);
 
-                //헤더에 토큰정보를 포함
-                HttpHeaders httpHeaders = new HttpHeaders();
-                httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
+                    //헤더에 토큰정보를 포함
+                    HttpHeaders httpHeaders = new HttpHeaders();
+                    httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
 
-                userRepository.save(user);
+                    userRepository.save(user);
 
-                return new ResponseEntity<>(new TokenDto(jwt, refreshJwt), httpHeaders, HttpStatus.OK);
-            }
-            else{
-                String blockDateFormat = user.getBlockDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH시 mm분"));
-                return new ResponseEntity(blockDateFormat+" 까지 이용하실 수 없습니다.", HttpStatus.UNAUTHORIZED);
+                    return new ResponseEntity<>(new TokenDto(jwt, refreshJwt), httpHeaders, HttpStatus.OK);
+                }
+                else{
+                    String blockDateFormat = user.getBlockDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH시 mm분"));
+                    return new ResponseEntity(blockDateFormat+" 까지 이용하실 수 없습니다.", HttpStatus.UNAUTHORIZED);
+                }
             }
         }
+
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
@@ -136,10 +140,12 @@ public class AuthController {
             String userId = claims.getBody().getSubject();
 
             //사용자 정보조회
-            User user = userRepository.findByuserId(userId);
+            Optional<User> userOptional = userRepository.findByUserId(userId);
 
             //사용자가 있을경우
-            if (user != null) {
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+
                 //access token 발급
                 String jwt = tokenProvider.createToken(user);
 
@@ -180,5 +186,43 @@ public class AuthController {
         return ResponseEntity.ok(userService.signup(userDto)); //http의 body, header, status를 포함한 데이터 -> 추가 서칭 필요
         //Response header에는 웹서버가 웹브라우저에 응답하는 메시지가 들어있음
         //Reponse body에는 데이터 값이 들어있음
+    }
+
+    /**
+     * @methodName : userIdCheck
+     * @date : 2023-05-02 오후 3:23
+     * @author : hj
+     * @Description: userid입력 후 로그인 시 로그인 or 회원가입
+     **/
+    @PostMapping("/userExistenceCheck")
+    @ResponseBody
+    public ResponseEntity<?> userIdCheck(@RequestBody String userid, BindingResult result){
+        log.info("bindingResult ={}", result);
+
+        return ResponseEntity.ok(userService.userIdCheck(userid));
+    }
+
+    /**
+     * @methodName : sendEmail
+     * @date : 2023-05-02 오후 4:17
+     * @author : hj
+     * @Description: 이메일 전송 api, 로그인 시 해당 유저가 존재하지 않으면 해당 api 호출
+     **/
+    @PostMapping("/sendEmail")
+    @ResponseBody
+    public void sendEmail(@RequestBody String userid) throws Exception {
+        userService.sendEmail(userid);
+    }
+
+    /**
+     * @methodName : emailCheck
+     * @date : 2023-05-03 오후 5:22
+     * @author : hj
+     * @Description: 회원가입 시 부여된 랜덤 코드를 통해 유저 id 확인
+     **/
+    @PostMapping("/emailCheck")
+    @ResponseBody
+    public ResponseEntity<String> emailCheck(@RequestBody String checkCode){
+        return ResponseEntity.ok(userService.emailCheck(checkCode));
     }
 }

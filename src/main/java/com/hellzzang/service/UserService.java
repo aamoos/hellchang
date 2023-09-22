@@ -44,9 +44,11 @@ public class UserService {
     * @Description: 회원가입 시 호출되는 메서드
     **/
     public User signup(UserDto userDto) {  //userId을 통해 이미 가입되어 있는지 확인
-        if (userRepository.findOneWithAuthoritiesByuserId(userDto.getUserId()).orElse(null) != null) {
-            // .orElse : optional에 들어갈 값이 null일 경우 orElse 안의 내용을 실행
-            // Optional이란? 자바에서 Null 참조시 NullPointerException을 방지해주는 클래스
+
+        Optional<User> optionalUser = userRepository.findByUserId(userDto.getUserId());
+
+        //기존에 사용자가 있는경우
+        if(optionalUser.isPresent()){
             throw new RuntimeException("이미 가입되어 있는 유저입니다.");
         }
 
@@ -61,7 +63,7 @@ public class UserService {
                 .build();
 
         //동록된 이메일 인증코드 전부삭제
-        emailRepository.deleteByuserId(userDto.getUserId());
+        emailRepository.deleteByUserId(userDto.getUserId());
 
         return userRepository.save(user);  // save = DB에 insert
     }
@@ -119,28 +121,40 @@ public class UserService {
     }
 
     /**
+     * @methodName : userIdCheck
+     * @date : 2023-05-02 오후 3:24
+     * @author : hj
+     * @Description: 로그인 시 userId 체크 후 회원 존재 시 메인 이동, 없으면 회원가입 이동
+     **/
+    @Transactional(readOnly = true)
+    public boolean userIdCheck(String userid){
+
+        Optional<User> optionalUser = userRepository.findByUserId(userid);
+
+        //기존에 사용자가 존재할경우 true, 아닐경우 false
+        return optionalUser.isPresent();
+    }
+
+    /**
      * @methodName : emailCheck
      * @date : 2023-05-03 오후 5:22
      * @author : hj
      * @Description: 회원가입 시 부여된 랜덤 코드를 통해 유저 id 확인
      **/
     @Transactional(readOnly = true)
-    public String emailCheck(String checkCode){
-        Optional<Email> optionalEmail = emailRepository.findBycheckCode(checkCode);
+    public String emailCheck(String checkcode){
+        Optional<Email> optionalEmail = emailRepository.findByCheckCode(checkcode);
         if (optionalEmail.isPresent()){
             Email email = optionalEmail.get();
-            String userId = email.getUserId();
-            System.out.println(" 코드에 대한 이메일 테이블에서 아이디 존재 ----------------");
-            if (userRepository.findByuserId(userId) != null){
-                System.out.println(" 코드에 대한 유저 테이블에서 아이디 존재 ------------------");
+            String userid = email.getUserId();
+            Optional<User> optionalUser = userRepository.findByUserId(userid);
+
+            if(optionalUser.isPresent()){
                 return null;
-            }
-            else{
-                System.out.println(" 코드에 대한 유저 테이블에서 아이디 존재하지 않음 ------------------");
-                return userId;
+            }else{
+                return userid;
             }
         } else {
-            System.out.println("코드에 대한 아이디 존재하지 않음 -------------------");
             return null;
         }
     }

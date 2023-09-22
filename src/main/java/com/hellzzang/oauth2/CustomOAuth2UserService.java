@@ -14,6 +14,7 @@ package com.hellzzang.oauth2;
 import com.hellzzang.entity.User;
 import com.hellzzang.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -34,7 +35,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     private final HttpSession session;
 
     @Override
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+    public OAuth2User loadUser(OAuth2UserRequest userRequest){
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
         // 현재 로그인 진행 중인 서비스를 구분하는 코드
@@ -49,7 +50,11 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // OAuthAttributes: attribute를 담을 클래스 (개발자가 생성)
         OAuthAttributes attributes = OAuthAttributes
                 .of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
-        User user = saveOrUpdate(attributes, registrationId);
+        try {
+            saveOrUpdate(attributes, registrationId);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         // SessioUser: 세션에 사용자 정보를 저장하기 위한 DTO 클래스 (개발자가 생성)
 
         return new DefaultOAuth2User(
@@ -58,38 +63,36 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 attributes.getNameAttributeKey()
         );
     }
-    private User saveOrUpdate(OAuthAttributes attributes, String registrationId) {
-        User user = userRepository.findByuserId(attributes.getEmail());
-        if(user !=null){
-            user = userRepository.findByuserId(attributes.getEmail());
-        }
-        else {
-            user = attributes.toEntity();
-            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-            //임시비멀번호 설정
-            user.changePassword(passwordEncoder.encode(user.getUserId()));
-
-            String socialId = "";
-
-            if("kakao".equals(registrationId)){
-                socialId = String.valueOf(attributes.getAttributes().get("id"));
-            }else if("naver".equals(registrationId)){
-                LinkedHashMap map = (LinkedHashMap) attributes.getAttributes().get("response");
-                socialId = String.valueOf(map.get("id"));
-            }else if("google".equals(registrationId)){
-                Map map = attributes.getAttributes();
-                socialId = String.valueOf(map.get("sub"));
-            }
-
-            //소셜 id 등록
-            user.changeSocialId(socialId);
-
-            //저장
-            userRepository.save(user).getId();
-//            user = userRepository.findById(id).get();
-        }
-
-        return user;
+    private User saveOrUpdate(OAuthAttributes attributes, String registrationId) throws Exception {
+        return userRepository.findByUserId(attributes.getEmail()).orElse(saveUser(attributes, registrationId));
     }
+
+    private User saveUser(OAuthAttributes attributes, String registrationId){
+        //사용자가 없을경우
+        User userInfo = attributes.toEntity();
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        //임시비멀번호 설정
+        userInfo.changePassword(passwordEncoder.encode(userInfo.getUserId()));
+
+        String socialId = "";
+
+        if ("kakao".equals(registrationId)) {
+            socialId = String.valueOf(attributes.getAttributes().get("id"));
+        } else if ("naver".equals(registrationId)) {
+            LinkedHashMap map = (LinkedHashMap) attributes.getAttributes().get("response");
+            socialId = String.valueOf(map.get("id"));
+        } else if ("google".equals(registrationId)) {
+            Map map = attributes.getAttributes();
+            socialId = String.valueOf(map.get("sub"));
+        }
+
+        //소셜 id 등록
+        userInfo.changeSocialId(socialId);
+
+        //저장
+        userRepository.save(userInfo);
+        return userInfo;
+    }
+
 }
