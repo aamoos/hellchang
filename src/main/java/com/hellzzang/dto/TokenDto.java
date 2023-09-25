@@ -11,12 +11,14 @@ import lombok.*;
 * @Description: 클라이언트에 보내기 위한 dto
 **/
 
-@Getter
-@Setter
-@Builder
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
 public class TokenDto {
     private String token;
     private String refreshToken;
+
+    public TokenDto(String token, String refreshToken) {
+        this.token = token;
+        this.refreshToken = refreshToken;
+    }
 }

@@ -1,22 +1,16 @@
 package com.hellzzang.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hellzzang.entity.Community;
-import com.hellzzang.entity.Exercise;
 import com.hellzzang.entity.User;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import javax.persistence.Column;
+import javax.persistence.Lob;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * packageName    : com.hellzzang.dto
@@ -31,7 +25,7 @@ import java.util.List;
  */
 
 @Data
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class CommunityDto {
 
     private Long id;
@@ -73,6 +67,16 @@ public class CommunityDto {
         this.thumbnailIdx = thumbnailIdx;
         this.delYn = delYn;
         this.user = user;
+    }
+
+    @Builder
+    public CommunityDto(Community community){
+        this.id = community.getId();
+        this.title = community.getTitle();
+        this.contents = community.getContents();
+        this.delYn = community.getDelYn();
+        this.user = community.getUser();
+        this.thumbnailIdx = community.getThumbnailIdx();
     }
 
 }

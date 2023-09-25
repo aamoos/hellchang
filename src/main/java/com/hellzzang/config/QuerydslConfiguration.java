@@ -3,7 +3,6 @@ package com.hellzzang.config;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -12,7 +11,7 @@ import javax.persistence.PersistenceContext;
  * fileName       : QuerydslConfiguration
  * author         : 김재성
  * date           : 2023-05-02
- * description    :
+ * description    : querydsl 설정
  * ===========================================================
  * DATE              AUTHOR             NOTE
  * -----------------------------------------------------------

@@ -3,7 +3,9 @@ package com.hellzzang.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hellzzang.entity.Community;
 import com.hellzzang.entity.User;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -18,6 +20,7 @@ import javax.validation.constraints.Size;
 * @Description: 회원가입 시 사용
 **/
 @Data
+@NoArgsConstructor
 public class UserDto {
 
     @NotNull

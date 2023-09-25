@@ -1,9 +1,7 @@
 package com.hellzzang.repository;
 
-import com.hellzzang.dto.EmailDto;
 import com.hellzzang.entity.Email;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.Optional;
 
 /**

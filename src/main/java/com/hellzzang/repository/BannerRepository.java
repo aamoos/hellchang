@@ -2,8 +2,6 @@ package com.hellzzang.repository;
 
 import com.hellzzang.entity.Banner;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
 import java.util.Optional;
 
 /**

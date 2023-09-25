@@ -1,6 +1,5 @@
 package com.hellzzang.repository;
 
-import com.hellzzang.entity.FileInfo;
 import com.hellzzang.entity.GymWear;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

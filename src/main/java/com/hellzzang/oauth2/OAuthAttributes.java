@@ -2,7 +2,6 @@ package com.hellzzang.oauth2;
 
 import com.hellzzang.entity.User;
 import lombok.Getter;
-
 import java.util.Map;
 
 @Getter

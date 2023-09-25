@@ -1,10 +1,7 @@
 package com.hellzzang.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hellzzang.common.ValidationErrorResponse;
 import com.hellzzang.dto.CommunityDto;
-import com.hellzzang.dto.GymWearDto;
-import com.hellzzang.jwt.TokenProvider;
 import com.hellzzang.service.CommunityService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,10 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +45,12 @@ public class CommunityController {
     public Page<CommunityDto> find(@RequestBody CommunityListDto communityListDto, Pageable pageable, @RequestHeader(name="Authorization") String token) throws Exception {
         pageable = PageRequest.of(communityListDto.getPage(), communityListDto.getSize());
         return communityService.selectCommunityList(pageable, communityListDto.getTitle());
+    }
+
+    @GetMapping(value = {"/{id}"})
+    @ResponseBody
+    public CommunityDto communityDetail(@PathVariable("id") Long id) {
+        return communityService.selectCommunityDetail(id);
     }
 
     @Data

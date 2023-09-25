@@ -1,8 +1,11 @@
 package com.hellzzang.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.hellzzang.dto.*;
-import com.hellzzang.entity.*;
+import com.hellzzang.dto.CommunityDto;
+import com.hellzzang.dto.QCommunityDto;
+import com.hellzzang.entity.Community;
+import com.hellzzang.entity.CommunityFile;
+import com.hellzzang.entity.FileInfo;
+import com.hellzzang.entity.User;
 import com.hellzzang.jwt.TokenProvider;
 import com.hellzzang.repository.CommunityFileRepository;
 import com.hellzzang.repository.CommunityRepository;
@@ -16,14 +19,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-
 import static com.hellzzang.entity.QCommunity.community;
-import static com.hellzzang.entity.QGymWear.gymWear;
 
 /**
  * packageName    : com.hellzzang.service
@@ -48,6 +48,12 @@ public class CommunityService {
     private final TokenProvider tokenProvider;
     private final JPAQueryFactory jpaQueryFactory;
 
+    /**
+    * @methodName : selectCommunityList
+    * @date : 2023-09-25 오후 3:08
+    * @author : 김재성
+    * @Description: 커뮤니티 리스트 조회하기
+    **/
     public Page<CommunityDto> selectCommunityList(Pageable pageable, String searchVal){
         //admin 사용자 리스트 조회
         List<CommunityDto> content = getCommunityList(pageable, searchVal);
@@ -57,6 +63,28 @@ public class CommunityService {
         return new PageImpl<>(content, pageable, count);
     }
 
+    /**
+    * @methodName : selectCommunityDetail
+    * @date : 2023-09-25 오후 3:08
+    * @author : 김재성
+    * @Description: 커뮤니티 상세 조회하기
+    **/
+    public CommunityDto selectCommunityDetail(Long id){
+        Optional<Community> communityOptional = communityRepository.findById(id);
+
+        Community community = communityOptional.orElseThrow(IllegalAccessError::new);
+
+        return CommunityDto.builder()
+                .community(community)
+                .build();
+    }
+
+    /**
+    * @methodName : getCommunityList
+    * @date : 2023-09-25 오후 3:08
+    * @author : 김재성
+    * @Description: 커뮤니티 페이징 리스트
+    **/
     private List<CommunityDto> getCommunityList(Pageable pageable, String searchVal) {
 
         List<CommunityDto> content = jpaQueryFactory
@@ -79,9 +107,14 @@ public class CommunityService {
                 .fetch();
 
         return content;
-//        return null;
     }
 
+    /**
+    * @methodName : getCount
+    * @date : 2023-09-25 오후 3:08
+    * @author : 김재성
+    * @Description: 커뮤니티 total count
+    **/
     private Long getCount(String searchVal){
         Long count = jpaQueryFactory
                 .select(community.count())
@@ -92,16 +125,23 @@ public class CommunityService {
         return count;
     }
 
+    /**
+    * @package : com.hellzzang.service
+    * @name : CommunityService.java
+    * @date : 2023-09-25 오후 3:07
+    * @author : 김재성
+    * @Description: 커뮤니티 검색 조회
+    **/
     private BooleanExpression containsSearch(String searchVal){
         return searchVal != null && !searchVal.equals("") ? community.title.contains(searchVal) : null;
     }
 
     /**
     * @methodName : save
-    * @date : 2023-09-19 오후 1:45
+    * @date : 2023-09-25 오후 3:07
     * @author : 김재성
     * @Description: 커뮤니티 저장
-    **/
+    **/   
     public Long save(CommunityDto communityDto, List<MultipartFile> communityFiles, HttpServletRequest request, String token){
 
         //작성한 사용자 조회

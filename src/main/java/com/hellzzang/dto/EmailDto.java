@@ -1,7 +1,9 @@
 package com.hellzzang.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -18,6 +20,7 @@ import javax.validation.constraints.Size;
  * 2023-05-03        hj       최초 생성
  */
 @Data
+@NoArgsConstructor
 public class EmailDto {
 
     @NotNull

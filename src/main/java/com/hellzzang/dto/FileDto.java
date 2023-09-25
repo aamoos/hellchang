@@ -1,8 +1,10 @@
 package com.hellzzang.dto;
 
 import com.hellzzang.entity.FileInfo;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * packageName    : com.hellzzangAdmin.dto
@@ -16,6 +18,7 @@ import lombok.Data;
  * 2023-05-11        김재성       최초 생성
  */
 @Data
+@NoArgsConstructor
 public class FileDto {
 
     private Long id;                    //id
@@ -33,10 +36,6 @@ public class FileDto {
     private String contentType;         //ContentType
 
     private String delYn;               //삭제여부
-
-    public FileDto() {
-
-    }
 
     @Builder
     public FileDto(Long id, String originFileName, String savedFileName, String uploadDir

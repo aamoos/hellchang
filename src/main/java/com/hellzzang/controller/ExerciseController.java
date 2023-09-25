@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -53,18 +52,18 @@ public class ExerciseController {
     * @Description: 오늘의 운동 리스트 조회
     **/
     @PostMapping("/list")
-    public Result list(@RequestBody FindRequestDto findRequestDto, @RequestHeader(name="Authorization") String token) throws Exception {
+    public Result<List<ExerciseListDto>> list(@RequestBody FindRequestDto findRequestDto, @RequestHeader(name="Authorization") String token) throws Exception {
         System.out.println("token : " + token);
         //삭제 안된 운동조회
         List<Exercise> list = exerciseRepository.findByuserIdAndExerciseDateAndDelYnOrderByIdAsc(tokenProvider.getJwtTokenId(token), findRequestDto.getExerciseDate(), "N");
         List<ExerciseListDto> collect = list.stream()
                 .map(m -> new ExerciseListDto(m.getId(), m.getExerciseName(), m.getSetCount(), m.getKilogram(), m.getReps(), m.getDelYn(), m.getCompleteYn()))
                 .collect(Collectors.toList());
-        return new Result(collect.size(), collect);
+        return new Result<>(collect.size(), collect);
     }
 
     @PostMapping("/getCalendarData")
-    public Result getCalendarData(@RequestHeader(name="Authorization") String token) throws Exception {
+    public Result<List<ExerciseDto>> getCalendarData(@RequestHeader(name="Authorization") String token) throws Exception {
         System.out.println("token : " + token);
 
         //삭제 안된 운동조회
@@ -74,7 +73,7 @@ public class ExerciseController {
 //        return exerciseService.getCalendarData(tokenProvider.getJwtTokenId(token));
 
 
-        return new Result(collect.size(), collect);
+        return new Result<>(collect.size(), collect);
     }
 
     /**

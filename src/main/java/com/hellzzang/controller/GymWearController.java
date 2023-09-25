@@ -1,8 +1,6 @@
 package com.hellzzang.controller;
 
-import com.hellzzang.dto.ExerciseDto;
 import com.hellzzang.dto.GymWearDto;
-import com.hellzzang.dto.GymWearFileDto;
 import com.hellzzang.entity.GymWear;
 import com.hellzzang.entity.GymWearOption;
 import com.hellzzang.service.GymWearService;
@@ -12,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-
 import javax.persistence.Column;
 import javax.persistence.Lob;
 import javax.validation.constraints.Min;

@@ -1,6 +1,7 @@
 package com.hellzzang.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * packageName    : com.hellchang.dto
@@ -15,6 +16,7 @@ import lombok.Data;
  */
 
 @Data
+@NoArgsConstructor
 public class StatisticDto {
     private String exerciseDate;            //운동날짜
     private int count;                      //count

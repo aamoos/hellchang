@@ -1,7 +1,9 @@
 package com.hellzzang.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -17,6 +19,7 @@ import java.time.LocalDateTime;
  * 2023-06-15        hj       최초 생성
  */
 @Data
+@NoArgsConstructor
 public class DetailContentDto {
 
     private Long postId;

@@ -1,9 +1,7 @@
 package com.hellzzang.repository;
 
 import com.hellzzang.entity.User;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.Optional;
 
 
@@ -17,6 +15,13 @@ import java.util.Optional;
 **/
 
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    //사용자 정보조회
     Optional<User> findByUserId(String userId);
+
+    //소셜 id로 사용자 정보 조회
     Optional<User> findBySocialId(String id);
+
+    //사용자 중복 체크
+    boolean existsByUserId(String userId);
 }

@@ -3,7 +3,6 @@ package com.hellzzang.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 

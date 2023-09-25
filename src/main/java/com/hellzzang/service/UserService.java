@@ -45,10 +45,8 @@ public class UserService {
     **/
     public User signup(UserDto userDto) {  //userId을 통해 이미 가입되어 있는지 확인
 
-        Optional<User> optionalUser = userRepository.findByUserId(userDto.getUserId());
-
-        //기존에 사용자가 있는경우
-        if(optionalUser.isPresent()){
+        //이미 가입되어 있는경우 예외 처리
+        if(userRepository.existsByUserId(userDto.getUserId())){
             throw new RuntimeException("이미 가입되어 있는 유저입니다.");
         }
 

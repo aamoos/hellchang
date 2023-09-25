@@ -18,6 +18,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+* @package : com.hellzzang.config
+* @name : SecurityConfig.java
+* @date : 2023-09-25 오후 3:09
+* @author : 김재성
+* @Description: Security 설정파일
+**/
 @EnableWebSecurity //기본적인 Web 보안 활성화
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {

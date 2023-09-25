@@ -4,9 +4,6 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import java.time.LocalDate;
 
 /**
@@ -22,7 +19,7 @@ import java.time.LocalDate;
  */
 
 @Data
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class ExerciseDto {
 
     private LocalDate exerciseDate;

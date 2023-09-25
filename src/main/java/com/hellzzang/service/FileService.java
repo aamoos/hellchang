@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -52,7 +51,6 @@ public class FileService {
     /** 단일 파일업로드 */
     public FileInfo uploadFile(HttpServletRequest request, MultipartFile multipartFile) throws Exception{
 
-        FileDto fileDto = new FileDto();
         FileInfo fileInfo = null;
 
         String _filePath = String.valueOf(request.getParameter("filePath")).equals("null") ? uploadFilePath : uploadFilePath+String.valueOf(request.getParameter("filePath")+"/");
@@ -68,7 +66,7 @@ public class FileService {
                     String savedFileName = UUID.randomUUID() + extension;    //저장될 파일 명
 
                     File targetFile = new File(_filePath + File.separator + savedFileName);
-                    fileDto = FileDto.builder()
+                    FileDto fileDto = FileDto.builder()
                             .originFileName(originalFileName)
                             .savedFileName(savedFileName)
                             .uploadDir(_filePath)
@@ -105,7 +103,6 @@ public class FileService {
     /** 멀티파일 업로드 */
     public List<FileInfo> MultiUploadFile(HttpServletRequest request, List<MultipartFile> multipartFile) throws IOException {
 
-        FileDto fileDto = new FileDto();
         List<FileInfo> fileList = new ArrayList<>();
 
         //파일 시퀀스 리스트
@@ -129,7 +126,7 @@ public class FileService {
 //                        FileInfo file = new FileInfo();
                         Map<String, Object> file = new HashMap<String, Object>();
 
-                        fileDto = FileDto.builder()
+                        FileDto fileDto = FileDto.builder()
                                 .originFileName(originalFileName)
                                 .savedFileName(savedFileName)
                                 .uploadDir(_filePath)
@@ -171,52 +168,48 @@ public class FileService {
      **/
     public Long deleteFile(Long id){
         Optional<FileInfo> optionalFileInfo = fileRepository.findById(id);
-        FileInfo fileInfo = optionalFileInfo.get();
-        return fileInfo.getId();
+        optionalFileInfo.orElseThrow(IllegalArgumentException::new);
+        return optionalFileInfo.get().getId();
     }
 
     public void downloadFile(HttpServletResponse res, Long fileIdx) throws Exception {
         //파일 조회
-        Optional<FileInfo> fileInfo = fileRepository.findById(fileIdx);
+        Optional<FileInfo> optionalFileInfo = fileRepository.findById(fileIdx);
+        optionalFileInfo.orElseThrow(IllegalArgumentException::new);
 
-        if(fileInfo.isPresent()){
+        FileInfo file = optionalFileInfo.get();
 
-            FileInfo file = fileInfo.get();
+        //파일 경로
+        Path saveFilePath = Paths.get(file.getUploadDir() + File.separator + file.getSavedFileName());
 
-            //파일 경로
-            Path saveFilePath = Paths.get(file.getUploadDir() + File.separator + file.getSavedFileName());
+        //해당 경로에 파일이 없으면
+        if(!saveFilePath.toFile().exists()) {
+            throw new RuntimeException("file not found");
+        }
 
-            //해당 경로에 파일이 없으면
-            if(!saveFilePath.toFile().exists()) {
-                throw new RuntimeException("file not found");
-            }
+        res.setHeader("Content-Disposition", "attachment; filename=\"" +  URLEncoder.encode((String) file.getOriginFileName(), "UTF-8") + "\";");
+        res.setHeader("Content-Transfer-Encoding", "binary");
+        res.setHeader("Content-Type", "application/download; utf-8");
+        res.setHeader("Pragma", "no-cache;");
+        res.setHeader("Expires", "-1;");
 
-            res.setHeader("Content-Disposition", "attachment; filename=\"" +  URLEncoder.encode((String) file.getOriginFileName(), "UTF-8") + "\";");
-            res.setHeader("Content-Transfer-Encoding", "binary");
-            res.setHeader("Content-Type", "application/download; utf-8");
-            res.setHeader("Pragma", "no-cache;");
-            res.setHeader("Expires", "-1;");
+        FileInputStream fis = null;
 
-            FileInputStream fis = null;
-
+        try {
+            fis = new FileInputStream(saveFilePath.toFile());
+            FileCopyUtils.copy(fis, res.getOutputStream());
+            res.getOutputStream().flush();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        finally {
             try {
-                fis = new FileInputStream(saveFilePath.toFile());
-                FileCopyUtils.copy(fis, res.getOutputStream());
-                res.getOutputStream().flush();
+                fis.close();
             }
             catch (Exception e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
-            finally {
-                try {
-                    fis.close();
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }else{
-            throw new Exception("해당 파일정보가 없습니다.");
         }
     }
 
@@ -229,28 +222,23 @@ public class FileService {
     public ResponseEntity<byte[]> getThumbnail(Long fileIdx) throws Exception {
         ResponseEntity<byte[]> result = null;
 
-        Optional<FileInfo> optionalFile = fileRepository.findById(fileIdx);
+        Optional<FileInfo> optionalFileInfo = fileRepository.findById(fileIdx);
 
-        if(optionalFile.isPresent()){
+        optionalFileInfo.orElseThrow(IllegalArgumentException::new);
 
-            FileInfo fileInfo = optionalFile.get();
+        FileInfo fileInfo = optionalFileInfo.get();
+        String logiPath = fileInfo.getUploadDir();
+        String logiNm = fileInfo.getSavedFileName();
 
-            String logiPath = fileInfo.getUploadDir();
-            String logiNm = fileInfo.getSavedFileName();
+        java.io.File file = new java.io.File(logiPath+"/"+logiNm);
 
-            java.io.File file = new java.io.File(logiPath+"/"+logiNm);
+        try {
+            HttpHeaders headers=new HttpHeaders();
+            headers.add("Content-Type", Files.probeContentType(file.toPath()));
+            result=new ResponseEntity<>(FileCopyUtils.copyToByteArray(file),headers, HttpStatus.OK );
 
-            try {
-                HttpHeaders headers=new HttpHeaders();
-                headers.add("Content-Type", Files.probeContentType(file.toPath()));
-                result=new ResponseEntity<>(FileCopyUtils.copyToByteArray(file),headers, HttpStatus.OK );
-
-            }catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }else{
-            throw new Exception("해당 파일정보가 없습니다.");
+        }catch (IOException e) {
+            e.printStackTrace();
         }
 
         return result;

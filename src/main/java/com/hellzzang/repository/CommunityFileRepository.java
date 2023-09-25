@@ -1,6 +1,5 @@
 package com.hellzzang.repository;
 
-import com.hellzzang.entity.Community;
 import com.hellzzang.entity.CommunityFile;
 import org.springframework.data.jpa.repository.JpaRepository;
 

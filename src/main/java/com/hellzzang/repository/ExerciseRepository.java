@@ -2,7 +2,6 @@ package com.hellzzang.repository;
 
 import com.hellzzang.entity.Exercise;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.time.LocalDate;
 import java.util.List;
 
