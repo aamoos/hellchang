@@ -4,6 +4,7 @@ import com.hellzzang.entity.Banner;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * packageName    : com.hellzzangAdmin.repository
@@ -18,6 +19,6 @@ import java.util.List;
  */
 public interface BannerRepository extends JpaRepository<Banner, Long> {
 
-     Banner findByBannerPathAndDelYn(String bannerPath, String delYn);
+     Optional<Banner> findByBannerPathAndDelYn(String bannerPath, String delYn);
 
 }

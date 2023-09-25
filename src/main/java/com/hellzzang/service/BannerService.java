@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.hellzzang.entity.QBannerFile.bannerFile;
 
@@ -35,26 +36,25 @@ public class BannerService {
     @Transactional(readOnly = true)
     public List<BannerFileDto> findBannerFileList(String bannerPath){
 
-        Banner banner = bannerRepository.findByBannerPathAndDelYn(bannerPath, "N");
-
-        //해당 등록된 path가 없으면 all로 등록된거 있는지 체크
-        if(banner == null){
-            banner = bannerRepository.findByBannerPathAndDelYn("all", "N");;
-        }
-
+        Optional<Banner> optionalBanner = bannerRepository.findByBannerPathAndDelYn(bannerPath, "N");
         List<BannerFileDto> content = null;
 
-        if(banner != null){
+        if(optionalBanner.isEmpty()){
+            optionalBanner = bannerRepository.findByBannerPathAndDelYn("all", "N");
+        }
+
+        if(optionalBanner.isPresent()){
+            Banner banner = optionalBanner.get();
             content = jpaQueryFactory
-            .select(new QBannerFileDto(
-                    bannerFile.fileInfo.id
-                    ,bannerFile.fileInfo
-            ))
-            .from(bannerFile)
-            .where(bannerFile.fileInfo.delYn.eq("N"))
-            .where(bannerFile.banner.id.eq(banner.getId()))
-            .orderBy(bannerFile.id.desc())
-            .fetch();
+                    .select(new QBannerFileDto(
+                            bannerFile.fileInfo.id
+                            ,bannerFile.fileInfo
+                    ))
+                    .from(bannerFile)
+                    .where(bannerFile.fileInfo.delYn.eq("N"))
+                    .where(bannerFile.banner.id.eq(banner.getId()))
+                    .orderBy(bannerFile.id.desc())
+                    .fetch();
         }
         return content;
     }

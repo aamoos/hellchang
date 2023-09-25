@@ -74,10 +74,16 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         }else if("google".equals(socialId)){
             id = String.valueOf(map.get("sub"));
         }
-        User user = userRepository.findBySocialId(id);
 
-        String token = tokenProvider.createToken(user);
-        String refreshToken = tokenProvider.createRefreshToken(user);
+        Optional<User> optionalUser = userRepository.findBySocialId(id);
+        String token = "";
+        String refreshToken = "";
+
+        if(optionalUser.isPresent()){
+            User user = optionalUser.get();
+            token = tokenProvider.createToken(user);
+            refreshToken = tokenProvider.createRefreshToken(user);
+        }
 
         return UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("token", token)

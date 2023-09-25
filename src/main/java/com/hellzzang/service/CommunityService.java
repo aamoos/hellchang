@@ -113,12 +113,12 @@ public class CommunityService {
         Community saveCommunity = communityRepository.save(community);
 
         //멀티파일 업로드 (공통 파일 이력 테이블 insert)
-        List<FileInfo> fileInfos = null;
+         List<FileInfo> fileInfos = null;
         try {
             fileInfos = fileService.MultiUploadFile(request, communityFiles);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
+         }
 
         //커뮤니티 파일 첨부 테이블 insert
         int index = 0;

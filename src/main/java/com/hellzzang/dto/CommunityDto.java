@@ -5,7 +5,9 @@ import com.hellzzang.entity.Community;
 import com.hellzzang.entity.Exercise;
 import com.hellzzang.entity.User;
 import com.querydsl.core.annotations.QueryProjection;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
@@ -29,6 +31,7 @@ import java.util.List;
  */
 
 @Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CommunityDto {
 
     private Long id;
