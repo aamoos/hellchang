@@ -142,19 +142,11 @@ public class UserService {
     @Transactional(readOnly = true)
     public String emailCheck(String checkcode){
         Optional<Email> optionalEmail = emailRepository.findByCheckCode(checkcode);
-        if (optionalEmail.isPresent()){
-            Email email = optionalEmail.get();
-            String userid = email.getUserId();
-            Optional<User> optionalUser = userRepository.findByUserId(userid);
 
-            if(optionalUser.isPresent()){
-                return null;
-            }else{
-                return userid;
-            }
-        } else {
-            return null;
-        }
+        optionalEmail.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        Email email = optionalEmail.get();
+        return email.getUserId();
     }
 
 }

@@ -78,11 +78,11 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String token = "";
         String refreshToken = "";
 
-        if(optionalUser.isPresent()){
-            User user = optionalUser.get();
-            token = tokenProvider.createToken(user);
-            refreshToken = tokenProvider.createRefreshToken(user);
-        }
+        optionalUser.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        User user = optionalUser.get();
+        token = tokenProvider.createToken(user);
+        refreshToken = tokenProvider.createRefreshToken(user);
 
         return UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("token", token)

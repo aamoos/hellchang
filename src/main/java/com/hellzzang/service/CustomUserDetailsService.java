@@ -21,11 +21,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(final String userId) {
 
         Optional<User> optionalUser = userRepository.findByUserId(userId);
+        optionalUser.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        if(optionalUser.isPresent()){
-            return (UserDetails) optionalUser.get();
-        }else{
-            throw new UsernameNotFoundException(userId + " -> 데이터베이스에서 찾을 수 없습니다.");
-        }
+        return (UserDetails) optionalUser.get();
     }
 }

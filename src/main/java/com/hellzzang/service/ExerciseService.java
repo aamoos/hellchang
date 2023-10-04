@@ -64,14 +64,13 @@ public class ExerciseService {
     **/
     public void updateCompleteYn(Long id, String completeYn){
         Optional<Exercise> optionalExercise = exerciseRepository.findById(id);
-        if(optionalExercise.isPresent()){
-            Exercise exercise = optionalExercise.get();
 
-            //완료여부 업데이트
-            exercise.updateCompleteYn(completeYn);
-        }else{
-            throw new EntityNotFoundException("해당 운동을 찾을수 없습니다.");
-        }
+        optionalExercise.orElseThrow(() -> new IllegalArgumentException("해당 운동을 찾을수 없습니다."));
+
+        Exercise exercise = optionalExercise.get();
+
+        //완료여부 업데이트
+        exercise.updateCompleteYn(completeYn);
     }
 
     /**
