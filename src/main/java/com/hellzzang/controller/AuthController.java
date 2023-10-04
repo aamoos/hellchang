@@ -13,6 +13,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,9 +24,14 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @package : com.example.jwt.controller
@@ -40,8 +46,6 @@ import java.util.*;
 @Slf4j
 public class AuthController {
     private final TokenProvider tokenProvider;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
-
     private final UserRepository userRepository;
 
     @Value("${jwt.secret}")
@@ -124,7 +128,6 @@ public class AuthController {
      * @Description: 회원가입 메서드
      **/
     @PostMapping("/signup")
-    @ResponseBody
     public ResponseEntity<?> signup(@Valid @RequestBody UserDto userDto, BindingResult result) throws Exception {
         log.info("bindingResult ={}", result);
 
@@ -151,10 +154,9 @@ public class AuthController {
      * @Description: userid입력 후 로그인 시 로그인 or 회원가입
      **/
     @PostMapping("/userExistenceCheck")
-    @ResponseBody
-    public ResponseEntity<?> userIdCheck(@RequestBody String userid, BindingResult result){
+    public ResponseEntity<?> userIdCheck(@RequestBody UserIdCheckDto userIdCheckDto, BindingResult result){
         log.info("bindingResult ={}", result);
-        return ResponseEntity.ok(userService.userIdCheck(userid));
+        return ResponseEntity.ok(userService.userIdCheck(userIdCheckDto.getUserId()));
     }
 
     /**
@@ -164,9 +166,8 @@ public class AuthController {
      * @Description: 이메일 전송 api, 로그인 시 해당 유저가 존재하지 않으면 해당 api 호출
      **/
     @PostMapping("/sendEmail")
-    @ResponseBody
-    public void sendEmail(@RequestBody String userid) throws Exception {
-        userService.sendEmail(userid);
+    public void sendEmail(@RequestBody UserIdCheckDto userIdCheckDto) throws Exception {
+        userService.sendEmail(userIdCheckDto.getUserId());
     }
 
     /**
@@ -176,8 +177,18 @@ public class AuthController {
      * @Description: 회원가입 시 부여된 랜덤 코드를 통해 유저 id 확인
      **/
     @PostMapping("/emailCheck")
-    @ResponseBody
-    public ResponseEntity<String> emailCheck(@RequestBody String checkCode){
-        return ResponseEntity.ok(userService.emailCheck(checkCode));
+    public ResponseEntity<String> emailCheck(@RequestBody EmailCheckDto emailCheckDto){
+        return ResponseEntity.ok(userService.emailCheck(emailCheckDto.getCheckCode()));
     }
+
+    @Data
+    static class UserIdCheckDto{
+        private String userId;
+    }
+
+    @Data
+    static class EmailCheckDto{
+        private String checkCode;
+    }
+
 }

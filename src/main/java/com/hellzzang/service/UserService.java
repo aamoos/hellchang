@@ -72,8 +72,7 @@ public class UserService {
     * @author : hj
     * @Description: 가입 요청 이메일 전송
     **/
-    public void sendEmail(String userId) throws MessagingException, IOException {
-
+    public void sendEmail(String userId) throws Exception {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
@@ -140,8 +139,8 @@ public class UserService {
      * @Description: 회원가입 시 부여된 랜덤 코드를 통해 유저 id 확인
      **/
     @Transactional(readOnly = true)
-    public String emailCheck(String checkcode){
-        Optional<Email> optionalEmail = emailRepository.findByCheckCode(checkcode);
+    public String emailCheck(String checkCode){
+        Optional<Email> optionalEmail = emailRepository.findByCheckCode(checkCode);
 
         optionalEmail.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
