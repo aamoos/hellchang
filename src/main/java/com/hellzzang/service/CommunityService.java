@@ -1,7 +1,9 @@
 package com.hellzzang.service;
 
+import com.hellzzang.dto.CommunityFileDto;
 import com.hellzzang.dto.CommunityDto;
 import com.hellzzang.dto.QCommunityDto;
+import com.hellzzang.dto.QCommunityFileDto;
 import com.hellzzang.entity.Community;
 import com.hellzzang.entity.CommunityFile;
 import com.hellzzang.entity.FileInfo;
@@ -22,8 +24,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
+
 import static com.hellzzang.entity.QCommunity.community;
+import static com.hellzzang.entity.QCommunityFile.communityFile;
+import static com.hellzzang.entity.QFileInfo.fileInfo;
 
 /**
  * packageName    : com.hellzzang.service
@@ -69,14 +73,9 @@ public class CommunityService {
     * @author : 김재성
     * @Description: 커뮤니티 상세 조회하기
     **/
-    public CommunityDto selectCommunityDetail(Long id){
-        Optional<Community> communityOptional = communityRepository.findById(id);
-
-        Community community = communityOptional.orElseThrow(IllegalAccessError::new);
-
-        return CommunityDto.builder()
-                .community(community)
-                .build();
+    public List<CommunityFileDto> selectCommunityDetail(Long id){
+        List<CommunityFileDto> content = getCommunityDetail(id);
+        return content;
     }
 
     /**
@@ -104,6 +103,20 @@ public class CommunityService {
                 .orderBy(community.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .fetch();
+
+        return content;
+    }
+
+    private List<CommunityFileDto> getCommunityDetail(Long id){
+
+        List<CommunityFileDto> content = jpaQueryFactory
+                .select(new QCommunityFileDto(
+                     communityFile.id
+                    ,communityFile.fileInfo
+                ))
+                .from(communityFile)
+                .where(communityFile.community.id.eq(id))
                 .fetch();
 
         return content;
@@ -145,7 +158,7 @@ public class CommunityService {
     public Long save(CommunityDto communityDto, List<MultipartFile> communityFiles, HttpServletRequest request, String token){
 
         //작성한 사용자 조회
-        User user = userRepository.findById(tokenProvider.getJwtTokenId(token)).orElseThrow(NullPointerException::new);
+        User user = userRepository.findById(tokenProvider.getJwtTokenId(token)).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         communityDto.setUser(user);
 
         //게시글 저장

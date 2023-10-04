@@ -2,6 +2,7 @@ package com.hellzzang.controller;
 
 import com.hellzzang.common.ValidationErrorResponse;
 import com.hellzzang.dto.CommunityDto;
+import com.hellzzang.dto.CommunityFileDto;
 import com.hellzzang.service.CommunityService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -47,18 +48,9 @@ public class CommunityController {
         return communityService.selectCommunityList(pageable, communityListDto.getTitle());
     }
 
-    @GetMapping(value = {"/{id}"})
-    @ResponseBody
-    public CommunityDto communityDetail(@PathVariable("id") Long id) {
-        return communityService.selectCommunityDetail(id);
-    }
-
-    @Data
-    @NoArgsConstructor
-    static class CommunityListDto{
-        private String title;
-        private int page;
-        private int size;
+    @PostMapping("/detail")
+    public List<CommunityFileDto> communityDetail(@RequestBody CommunityDetailDto communityDetailDto) {
+        return communityService.selectCommunityDetail(communityDetailDto.getId());
     }
 
     @PostMapping("/save")
@@ -80,6 +72,20 @@ public class CommunityController {
         }
 
         return ResponseEntity.ok(communityService.save(communityDto, communityFiles, request, token));
+    }
+
+    @Data
+    @NoArgsConstructor
+    static class CommunityListDto{
+        private String title;
+        private int page;
+        private int size;
+    }
+
+    @Data
+    @NoArgsConstructor
+    static class CommunityDetailDto{
+        private Long id;
     }
 
 

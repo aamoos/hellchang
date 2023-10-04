@@ -52,13 +52,14 @@ public class Community extends BaseEntity {
     }
 
     @Builder
-    public Community(Long id, String title, String contents, User user, Long thumbnailIdx){
+    public Community(Long id, String title, String contents, User user, Long thumbnailIdx, List<CommunityFile> files){
         this.id = id;
         this.title = title;
         this.contents = contents;
         this.delYn = "N";
         this.user = user;
         this.thumbnailIdx = thumbnailIdx;
+        this.files = files;
     }
 
 }

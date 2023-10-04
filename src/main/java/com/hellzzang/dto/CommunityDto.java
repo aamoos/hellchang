@@ -1,6 +1,7 @@
 package com.hellzzang.dto;
 
 import com.hellzzang.entity.Community;
+import com.hellzzang.entity.CommunityFile;
 import com.hellzzang.entity.User;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.AccessLevel;
@@ -11,6 +12,8 @@ import javax.persistence.Column;
 import javax.persistence.Lob;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * packageName    : com.hellzzang.dto
@@ -47,6 +50,8 @@ public class CommunityDto {
     private String delYn;
 
     private User user;
+
+    private List<CommunityFile> files = new ArrayList<>();
 
     public Community toEntity(){
         return Community.builder()
