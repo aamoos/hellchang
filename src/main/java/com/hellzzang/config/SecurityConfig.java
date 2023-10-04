@@ -66,9 +66,7 @@ public class SecurityConfig {
                 web
                         .ignoring()
                         .antMatchers(  //아래의 요청들에 대해서는 Spring Security 로직을 수행하지 않아도 접근이 가능(=인증 무시)
-                                "/h2-console/**"
-                                , "/favicon.ico"
-                                , "/css/**", "/js/**", "/img/**"
+                                "/h2-console/**", "/favicon.ico", "/css/**", "/js/**", "/img/**"
                         );
     }
 
@@ -93,7 +91,7 @@ public class SecurityConfig {
 
                 .and()
                 .authorizeRequests()  //요청들에 대한 접근 설정
-                .antMatchers("/auth/**", "/oauth2/**", "/userJoin/**", "/thumbnail/**").permitAll()
+                .antMatchers("/auth/**", "/oauth2/**", "/userJoin/**", "/thumbnail/**", "/userLogin").permitAll()
                 .anyRequest().authenticated()  //이외 나머지 요청은 인증이 필요
                 .and()
                 .oauth2Login()

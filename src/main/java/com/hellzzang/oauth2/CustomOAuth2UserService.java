@@ -27,6 +27,7 @@ import javax.servlet.http.HttpSession;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -64,7 +65,15 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         );
     }
     private User saveOrUpdate(OAuthAttributes attributes, String registrationId) throws Exception {
-        return userRepository.findByUserId(attributes.getEmail()).orElse(saveUser(attributes, registrationId));
+
+        Optional<User> optionalUser = userRepository.findByUserId(attributes.getEmail());
+
+        if(optionalUser.isPresent()){
+            return optionalUser.get();
+        }else{
+            saveUser(attributes, registrationId);
+            return null;
+        }
     }
 
     private User saveUser(OAuthAttributes attributes, String registrationId){
