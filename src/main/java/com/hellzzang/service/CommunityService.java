@@ -86,7 +86,7 @@ public class CommunityService {
                 ))
                 .from(communityComment)
                 .where(communityComment.community.id.eq(id))
-                .orderBy(community.id.desc())
+                .orderBy(communityComment.community.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
