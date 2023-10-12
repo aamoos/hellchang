@@ -51,8 +51,6 @@ public class CommunityDto {
 
     private User user;
 
-    private List<CommunityFile> files = new ArrayList<>();
-
     public Community toEntity(){
         return Community.builder()
                 .id(id)

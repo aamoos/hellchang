@@ -24,12 +24,9 @@ public class CommunityFileDto {
 
     private Long fileId;
 
-    private FileInfo fileInfo;
-
     @QueryProjection
-    public CommunityFileDto(Long fileId, FileInfo fileInfo){
+    public CommunityFileDto(Long fileId){
         this.fileId = fileId;
-        this.fileInfo = fileInfo;
     }
 
 }

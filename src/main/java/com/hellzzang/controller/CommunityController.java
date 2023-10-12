@@ -1,6 +1,7 @@
 package com.hellzzang.controller;
 
 import com.hellzzang.common.ValidationErrorResponse;
+import com.hellzzang.dto.CommunityCommentDto;
 import com.hellzzang.dto.CommunityDto;
 import com.hellzzang.dto.CommunityFileDto;
 import com.hellzzang.service.CommunityService;
@@ -48,9 +49,20 @@ public class CommunityController {
         return communityService.selectCommunityList(pageable, communityListDto.getTitle());
     }
 
+    @PostMapping("/comment/list")
+    public Page<CommunityCommentDto> commentList(@RequestBody CommunityCommentDto communityCommentDto, Pageable pageable, @RequestHeader(name="Authorization") String token) throws Exception {
+        pageable = PageRequest.of(communityCommentDto.getPage(), communityCommentDto.getSize());
+        return communityService.selectCommunityCommentList(pageable, communityCommentDto.getCommunityId());
+    }
+
     @PostMapping("/detail")
-    public List<CommunityFileDto> communityDetail(@RequestBody CommunityDetailDto communityDetailDto) {
+    public CommunityDto communityDetail(@RequestBody CommunityDetailDto communityDetailDto) {
         return communityService.selectCommunityDetail(communityDetailDto.getId());
+    }
+
+    @PostMapping("/detailFile")
+    public List<CommunityFileDto> communityDetailFile(@RequestBody CommunityDetailDto communityDetailDto) {
+        return communityService.selectCommunityDetailFile(communityDetailDto.getId());
     }
 
     @PostMapping("/save")
@@ -72,6 +84,26 @@ public class CommunityController {
         }
 
         return ResponseEntity.ok(communityService.save(communityDto, communityFiles, request, token));
+    }
+
+    @PostMapping("/comment/save")
+    public ResponseEntity<?> commentSave(@Valid @RequestBody CommunityCommentDto communityCommentRequestDto, BindingResult result
+            , HttpServletRequest request
+            , @RequestHeader(name="Authorization") String token){
+        log.info("bindingResult ={}", result);
+
+        if (result.hasErrors()) {
+            Map<String, List<String>> fieldErrors = new HashMap<>();
+            result.getFieldErrors().forEach(fieldError -> {
+                String field = fieldError.getField();
+                String message = fieldError.getDefaultMessage();
+                fieldErrors.computeIfAbsent(field, key -> new ArrayList<>()).add(message);
+            });
+
+            return ResponseEntity.badRequest().body(new ValidationErrorResponse(fieldErrors));
+        }
+
+        return ResponseEntity.ok(communityService.saveComment(communityCommentRequestDto, token));
     }
 
     @Data

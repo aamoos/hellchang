@@ -1,14 +1,9 @@
 package com.hellzzang.service;
 
-import com.hellzzang.dto.CommunityFileDto;
-import com.hellzzang.dto.CommunityDto;
-import com.hellzzang.dto.QCommunityDto;
-import com.hellzzang.dto.QCommunityFileDto;
-import com.hellzzang.entity.Community;
-import com.hellzzang.entity.CommunityFile;
-import com.hellzzang.entity.FileInfo;
-import com.hellzzang.entity.User;
+import com.hellzzang.dto.*;
+import com.hellzzang.entity.*;
 import com.hellzzang.jwt.TokenProvider;
+import com.hellzzang.repository.CommunityCommentRepository;
 import com.hellzzang.repository.CommunityFileRepository;
 import com.hellzzang.repository.CommunityRepository;
 import com.hellzzang.repository.UserRepository;
@@ -21,14 +16,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import static com.hellzzang.entity.QCommunity.community;
 import static com.hellzzang.entity.QCommunityFile.communityFile;
-import static com.hellzzang.entity.QFileInfo.fileInfo;
-
+import static com.hellzzang.entity.QCommunityComment.communityComment;
 /**
  * packageName    : com.hellzzang.service
  * fileName       : CommunityService
@@ -51,6 +47,7 @@ public class CommunityService {
     private final UserRepository userRepository;
     private final TokenProvider tokenProvider;
     private final JPAQueryFactory jpaQueryFactory;
+    private final CommunityCommentRepository commentRepository;
 
     /**
     * @methodName : selectCommunityList
@@ -67,14 +64,58 @@ public class CommunityService {
         return new PageImpl<>(content, pageable, count);
     }
 
+    // 게시글의 댓글 전체 가져오기
+    public Page<CommunityCommentDto> selectCommunityCommentList(Pageable pageable, Long id){
+
+        List<CommunityCommentDto> content = getCommunityCommentList(pageable, id);
+
+        Long count = getCommunityCommentCount(id);
+        return new PageImpl<>(content, pageable, count);
+    }
+
+    private List<CommunityCommentDto> getCommunityCommentList(Pageable pageable, Long id) {
+
+        List<CommunityCommentDto> content = jpaQueryFactory
+                .select(new QCommunityCommentDto(
+                         communityComment.id
+                        ,communityComment.user
+                        ,communityComment.community
+                        ,communityComment.content
+                        ,communityComment.parent
+                        ,communityComment.children
+                ))
+                .from(communityComment)
+                .where(communityComment.community.id.eq(id))
+                .orderBy(community.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return content;
+    }
+
+    private Long getCommunityCommentCount(Long id){
+        Long count = jpaQueryFactory
+                .select(communityComment.count())
+                .from(communityComment)
+                .where(communityComment.community.id.eq(id))
+                .fetchOne();
+        return count;
+    }
+
     /**
     * @methodName : selectCommunityDetail
     * @date : 2023-09-25 오후 3:08
     * @author : 김재성
     * @Description: 커뮤니티 상세 조회하기
     **/
-    public List<CommunityFileDto> selectCommunityDetail(Long id){
-        List<CommunityFileDto> content = getCommunityDetail(id);
+    public CommunityDto selectCommunityDetail(Long id){
+        CommunityDto content = getCommunityDetail(id);
+        return content;
+    }
+
+    public List<CommunityFileDto> selectCommunityDetailFile(Long id){
+        List<CommunityFileDto> content = getCommunityDetailFile(id);
         return content;
     }
 
@@ -108,12 +149,31 @@ public class CommunityService {
         return content;
     }
 
-    private List<CommunityFileDto> getCommunityDetail(Long id){
+    private CommunityDto getCommunityDetail(Long id){
+
+        CommunityDto content = jpaQueryFactory
+                .select(new QCommunityDto(
+                        community.id
+                        ,community.title
+                        ,community.contents
+                        ,community.createdDate
+                        ,community.lastModifiedDate
+                        ,community.thumbnailIdx
+                        ,community.delYn
+                        ,community.user
+                ))
+                .from(community)
+                .where(community.id.eq(id))
+                .fetchOne();
+
+        return content;
+    }
+
+    private List<CommunityFileDto> getCommunityDetailFile(Long id){
 
         List<CommunityFileDto> content = jpaQueryFactory
                 .select(new QCommunityFileDto(
-                     communityFile.id
-                    ,communityFile.fileInfo
+                         communityFile.fileInfo.id
                 ))
                 .from(communityFile)
                 .where(communityFile.community.id.eq(id))
@@ -195,4 +255,44 @@ public class CommunityService {
         return saveCommunity.getId();
     }
 
+    public Long saveComment(CommunityCommentDto requestDto, String token) {
+
+        //작성한 사용자 조회
+        User user = userRepository.findById(tokenProvider.getJwtTokenId(token)).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        Optional<Community> optionalCommunity = communityRepository.findById(requestDto.getCommunityId());
+
+        optionalCommunity.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글 id 입니다."));
+
+        Community community = optionalCommunity.get();
+
+        CommunityComment parent = null;
+
+        // 자식댓글인 경우
+        if(requestDto.getParentId() != null){
+            Optional<CommunityComment> optionalParent = commentRepository.findByParentId(requestDto.getParentId());
+            optionalParent.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글 id 입니다."));
+
+            parent = optionalParent.get();
+
+            // 부모댓글의 게시글 번호와 자식댓글의 게시글 번호 같은지 체크하기
+            if(parent.getCommunity().getId() != requestDto.getCommunityId()){
+                new IllegalArgumentException("부모댓글과 자식댓글의 게시글 번호가 일치하지 않습니다.");
+            }
+        }
+
+        CommunityComment comment = CommunityComment.builder()
+                .user(user)
+                .community(community)
+                .content(requestDto.getContent())
+                .build();
+        if(null != parent){
+            comment.updateParent(parent);
+        }
+
+        //부모일때
+        commentRepository.save(comment);
+
+        return comment.getId();
+    }
 }
