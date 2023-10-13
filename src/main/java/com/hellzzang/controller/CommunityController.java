@@ -4,6 +4,7 @@ import com.hellzzang.common.ValidationErrorResponse;
 import com.hellzzang.dto.CommunityCommentDto;
 import com.hellzzang.dto.CommunityDto;
 import com.hellzzang.dto.CommunityFileDto;
+import com.hellzzang.entity.CommunityComment;
 import com.hellzzang.service.CommunityService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -50,7 +51,8 @@ public class CommunityController {
     }
 
     @PostMapping("/comment/list")
-    public Page<CommunityCommentDto> commentList(@RequestBody CommunityCommentDto communityCommentDto, Pageable pageable, @RequestHeader(name="Authorization") String token) throws Exception {
+    public Page<CommunityComment> commentList(@RequestBody CommunityCommentDto communityCommentDto, Pageable pageable) throws Exception {
+
         pageable = PageRequest.of(communityCommentDto.getPage(), communityCommentDto.getSize());
         return communityService.selectCommunityCommentList(pageable, communityCommentDto.getCommunityId());
     }

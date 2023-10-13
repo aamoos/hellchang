@@ -65,42 +65,72 @@ public class CommunityService {
     }
 
     // 게시글의 댓글 전체 가져오기
-    public Page<CommunityCommentDto> selectCommunityCommentList(Pageable pageable, Long id){
+    public Page<CommunityComment> selectCommunityCommentList(Pageable pageable, Long id){
 
-        List<CommunityCommentDto> content = getCommunityCommentList(pageable, id);
+        List<CommunityComment> content = getCommunityCommentList(pageable, id);
 
         Long count = getCommunityCommentCount(id);
         return new PageImpl<>(content, pageable, count);
     }
 
-    private List<CommunityCommentDto> getCommunityCommentList(Pageable pageable, Long id) {
+    private List<CommunityComment> getCommunityCommentList(Pageable pageable, Long id) {
 
-        List<CommunityCommentDto> content = jpaQueryFactory
-                .select(new QCommunityCommentDto(
-                         communityComment.id
-                        ,communityComment.user
-                        ,communityComment.community
-                        ,communityComment.content
-                        ,communityComment.parent
-                        ,communityComment.children
-                ))
-                .from(communityComment)
+//        List<CommunityCommentDto> content = jpaQueryFactory
+//                .select(new QCommunityCommentDto(
+//                         communityComment.id
+//                        ,communityComment.user
+//                        ,communityComment.community
+//                        ,communityComment.content
+//                        ,communityComment.parent
+//                        ,communityComment.children
+//                ))
+//                .from(communityComment)
+//                .where(communityComment.community.id.eq(id))
+//                .orderBy(communityComment.id.desc())
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .fetch();
+//
+//        return content;
+
+        List<CommunityComment> contents = jpaQueryFactory.selectFrom(communityComment)
+                .leftJoin(communityComment.parent).fetchJoin()
+                .leftJoin(communityComment.user).fetchJoin()
+//                .leftJoin(communityComment.community).fetchJoin()
                 .where(communityComment.community.id.eq(id))
-                .orderBy(communityComment.community.id.desc())
+                .orderBy(communityComment.parent.id.asc().nullsFirst(), communityComment.id.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return content;
+        System.out.println(contents);
+
+        return contents;
+
+//        return jpaQueryFactory.selectFrom(communityComment)
+//                .leftJoin(communityComment.parent)
+//                .fetchJoin()
+//                .where(communityComment.community.id.eq(id))
+//                .orderBy(communityComment.parent.id.asc().nullsFirst(), communityComment.id.asc())
+//                .fetch();
     }
 
     private Long getCommunityCommentCount(Long id){
-        Long count = jpaQueryFactory
-                .select(communityComment.count())
+//        Long count = jpaQueryFactory
+//                .select(communityComment.count())
+//                .from(communityComment)
+//                .where(communityComment.community.id.eq(id))
+//                .fetchOne();
+//        return count;
+
+        return jpaQueryFactory.select(communityComment.count())
                 .from(communityComment)
+//                .leftJoin(communityComment.parent).fetchJoin()
+//                .leftJoin(communityComment.user).fetchJoin()
+//                .leftJoin(communityComment.community).fetchJoin()
+//                .fetchJoin()
                 .where(communityComment.community.id.eq(id))
                 .fetchOne();
-        return count;
     }
 
     /**
@@ -270,7 +300,7 @@ public class CommunityService {
 
         // 자식댓글인 경우
         if(requestDto.getParentId() != null){
-            Optional<CommunityComment> optionalParent = commentRepository.findByParentId(requestDto.getParentId());
+            Optional<CommunityComment> optionalParent = commentRepository.findById(requestDto.getParentId());
             optionalParent.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글 id 입니다."));
 
             parent = optionalParent.get();
@@ -286,6 +316,10 @@ public class CommunityService {
                 .community(community)
                 .content(requestDto.getContent())
                 .build();
+
+        //visible 처음 false 처리
+        comment.defaultElementVisible();
+
         if(null != parent){
             comment.updateParent(parent);
         }

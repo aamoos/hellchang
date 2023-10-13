@@ -1,5 +1,7 @@
 package com.hellzzang.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hellzzang.dto.CommunityCommentDto;
 import lombok.*;
 
@@ -12,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class CommunityComment {
+public class CommunityComment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +26,7 @@ public class CommunityComment {
 
     @JoinColumn(name = "community_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     private Community community;
 
     @Column(nullable = false)
@@ -31,11 +34,15 @@ public class CommunityComment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
+    @JsonIgnore
     private CommunityComment parent;
 
     @Builder.Default
     @OneToMany(mappedBy = "parent", orphanRemoval = true)
+    @JsonIgnore
     private List<CommunityComment> children = new ArrayList<>();
+
+    private boolean isElementVisible;
 
     // 부모 댓글 수정
     public void update(CommunityCommentDto communityCommentDto) {
@@ -49,5 +56,9 @@ public class CommunityComment {
 
     public boolean validateMember(User user) {
         return !this.user.equals(user);
+    }
+
+    public void defaultElementVisible(){
+        this.isElementVisible = false;
     }
 }

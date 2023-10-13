@@ -22,6 +22,7 @@ public class User{
 
     private String userId; //로그인 아이디
 
+    @JsonIgnore
     private String password; //비밀번호
 
     private String userName; //이름

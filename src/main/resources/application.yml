@@ -45,3 +45,7 @@ spring:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
+
+  jackson:
+    serialization:
+      fail-on-empty-beans: false #양방향 매핑 오류 해결 Cannot call sendError() after the response has been committed
