@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class CommunityComment extends BaseEntity {
+public class CommunityComment extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +39,7 @@ public class CommunityComment extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "parent", orphanRemoval = true)
-    @JsonIgnore
+//    @JsonIgnore
     private List<CommunityComment> children = new ArrayList<>();
 
     private boolean isElementVisible;

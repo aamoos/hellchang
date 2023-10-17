@@ -16,15 +16,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import static com.hellzzang.entity.QCommunity.community;
 import static com.hellzzang.entity.QCommunityFile.communityFile;
 import static com.hellzzang.entity.QCommunityComment.communityComment;
+
 /**
  * packageName    : com.hellzzang.service
  * fileName       : CommunityService
@@ -94,17 +94,15 @@ public class CommunityService {
 //        return content;
 
         List<CommunityComment> contents = jpaQueryFactory.selectFrom(communityComment)
-                .leftJoin(communityComment.parent).fetchJoin()
-                .leftJoin(communityComment.user).fetchJoin()
+                .leftJoin(communityComment.parent)
+//                .fetchJoin()
+//                .leftJoin(communityComment.user).fetchJoin()
 //                .leftJoin(communityComment.community).fetchJoin()
-                .where(communityComment.community.id.eq(id))
+                .where(communityComment.community.id.eq(id), communityComment.parent.id.isNull())
                 .orderBy(communityComment.parent.id.asc().nullsFirst(), communityComment.id.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-
-        System.out.println(contents);
-
         return contents;
 
 //        return jpaQueryFactory.selectFrom(communityComment)
@@ -125,11 +123,12 @@ public class CommunityService {
 
         return jpaQueryFactory.select(communityComment.count())
                 .from(communityComment)
-//                .leftJoin(communityComment.parent).fetchJoin()
+                .leftJoin(communityComment.parent)
+//                .fetchJoin()
 //                .leftJoin(communityComment.user).fetchJoin()
 //                .leftJoin(communityComment.community).fetchJoin()
 //                .fetchJoin()
-                .where(communityComment.community.id.eq(id))
+                .where(communityComment.community.id.eq(id), communityComment.parent.id.isNull())
                 .fetchOne();
     }
 

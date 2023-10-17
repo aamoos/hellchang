@@ -28,10 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @package : com.example.jwt.controller
@@ -103,9 +100,13 @@ public class AuthController {
 
             String userId = claims.getBody().getSubject();
 
-            User user = userRepository.findByUserId(userId)
-                    .orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다."));
+//            User user = userRepository.findByUserId(userId)
+//                    .orElseThrow(() -> new JwtException("해당 사용자가 존재하지 않습니다."));
 
+            Optional<User> optionalUser = userRepository.findByUserId(userId);
+            optionalUser.orElseThrow(() -> new JwtException("해당 사용자가 존재하지 않습니다."));
+
+            User user = optionalUser.get();
             // Access token 발급
             String accessToken = tokenProvider.createToken(user);
 
@@ -117,7 +118,7 @@ public class AuthController {
             return ResponseEntity.ok(newTokenDto);
         } catch (JwtException | IllegalArgumentException e) {
             // Invalid refresh token
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 

@@ -41,15 +41,5 @@ public class CommunityCommentDto {
     private int page;
     private int size;
 
-    @QueryProjection
-    public CommunityCommentDto(Long id, User user
-            , Community community, String content
-            , CommunityComment parent, List<CommunityComment> children ){
-        this.id = id;
-        this.user = user;
-        this.community = community;
-        this.content = content;
-        this.parent = parent;
-        this.children = children;
-    }
+    private boolean isElementVisible;
 }

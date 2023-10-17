@@ -52,7 +52,6 @@ public class CommunityController {
 
     @PostMapping("/comment/list")
     public Page<CommunityComment> commentList(@RequestBody CommunityCommentDto communityCommentDto, Pageable pageable) throws Exception {
-
         pageable = PageRequest.of(communityCommentDto.getPage(), communityCommentDto.getSize());
         return communityService.selectCommunityCommentList(pageable, communityCommentDto.getCommunityId());
     }
