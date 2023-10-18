@@ -314,6 +314,7 @@ public class CommunityService {
                 .user(user)
                 .community(community)
                 .content(requestDto.getContent())
+                .targetReplyUser(requestDto.getTargetReplyUser())
                 .build();
 
         //visible 처음 false 처리

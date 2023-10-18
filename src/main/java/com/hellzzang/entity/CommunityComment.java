@@ -44,6 +44,8 @@ public class CommunityComment extends BaseEntity{
 
     private boolean isElementVisible;
 
+    private String targetReplyUser; //대댓글 달경우 대상이름
+
     // 부모 댓글 수정
     public void update(CommunityCommentDto communityCommentDto) {
         this.content = communityCommentDto.getContent();

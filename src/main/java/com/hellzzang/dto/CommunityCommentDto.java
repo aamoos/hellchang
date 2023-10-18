@@ -42,4 +42,6 @@ public class CommunityCommentDto {
     private int size;
 
     private boolean isElementVisible;
+
+    private String targetReplyUser; //댓글대상
 }
