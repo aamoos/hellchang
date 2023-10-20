@@ -1,6 +1,8 @@
 package com.hellzzang.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hellzzang.dto.UserDto;
+import com.hellzzang.dto.myInfo.UserEditRequestDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -86,4 +88,19 @@ public class User{
     public void changeSocialId(String socialId){
         this.socialId = socialId;
     }
+
+    //썸네일 idx 설정
+    public void setThumbnailIdx(Long idx){
+        this.thumbnailIdx = idx;
+    }
+
+    //회원 수정
+    public void updateUserInfo(UserEditRequestDto userEditRequestDto){
+        this.userName = userEditRequestDto.getUserName();
+        this.nickName = userEditRequestDto.getNickName();
+        this.address = userEditRequestDto.getAddress();
+        this.addressDetail = userEditRequestDto.getAddressDetail();
+        this.phone = userEditRequestDto.getPhone();
+    }
+
 }

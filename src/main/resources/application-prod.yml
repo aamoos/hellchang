@@ -65,3 +65,6 @@ app_url: http://192.168.0.39:8080
 
 file:
   upload-path: /home/hellzzang/server/upload
+
+thumbnail:
+  url: http://192.168.0.39:8180/thumbnail/

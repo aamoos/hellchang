@@ -1,19 +1,16 @@
 package com.hellzzang.dto;
 
 import com.hellzzang.entity.Community;
-import com.hellzzang.entity.CommunityFile;
 import com.hellzzang.entity.User;
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import javax.persistence.Column;
 import javax.persistence.Lob;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * packageName    : com.hellzzang.dto

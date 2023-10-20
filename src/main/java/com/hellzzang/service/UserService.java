@@ -2,8 +2,13 @@ package com.hellzzang.service;
 
 
 import com.hellzzang.dto.UserDto;
+import com.hellzzang.dto.myInfo.MyInfoResponseDto;
+import com.hellzzang.dto.myInfo.UserEditRequestDto;
+import com.hellzzang.entity.CommunityFile;
 import com.hellzzang.entity.Email;
+import com.hellzzang.entity.FileInfo;
 import com.hellzzang.entity.User;
+import com.hellzzang.jwt.TokenProvider;
 import com.hellzzang.repository.EmailRepository;
 import com.hellzzang.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,12 +18,14 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -29,13 +36,17 @@ public class UserService {
     private final UserRepository userRepository;
     private final EmailRepository emailRepository;
     private final PasswordEncoder passwordEncoder;
-
     private final JavaMailSender mailSender;
     private static final String FROM_ADDRESS = "gidwns617@naver.com";
     private final SpringTemplateEngine thymeleafTemplateEngine;
+    private final TokenProvider tokenProvider;
+    private final FileService fileService;
 
     @Value("${app_url}")
     private String appUrl;
+
+    @Value("${thumbnail.url}")
+    private String thumbnailUrl;
 
     /**
     * @methodName : signup
@@ -148,4 +159,31 @@ public class UserService {
         return email.getUserId();
     }
 
+    @Transactional(readOnly = true)
+    public MyInfoResponseDto getMyInfo(String token){
+        User user = userRepository.findById(tokenProvider.getJwtTokenId(token)).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        return new MyInfoResponseDto(user, thumbnailUrl);
+    }
+
+    //사용자 수정
+    public Long userEdit(UserEditRequestDto userEditRequestDto, String token, MultipartFile thumbnailFile, HttpServletRequest request) {
+
+        //사용자 조회
+        User user = userRepository.findById(tokenProvider.getJwtTokenId(token)).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        user.updateUserInfo(userEditRequestDto);
+
+        if(thumbnailFile != null){
+            //파일 업로드 (공통 파일 이력 테이블 insert)
+            FileInfo fileInfo = null;
+            try {
+                fileInfo = fileService.uploadFile(request, thumbnailFile);
+                user.setThumbnailIdx(fileInfo.getId());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return user.getId();
+    }
 }
