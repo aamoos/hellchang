@@ -5,6 +5,7 @@
 - Spring Boot
 - Gradle
 - JPA
+- QueryDsl
 - H2
 - InteliJ
 
